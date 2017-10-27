@@ -5,9 +5,11 @@ import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.annotation.ColorRes
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.ActivityCompat
 
 import android.support.v4.app.FragmentActivity;
+import android.text.InputType
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -24,6 +26,9 @@ import com.google.android.gms.maps.model.*
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.ArrayList
+import android.widget.EditText
+
+
 
 class MainActivity : AppCompatActivity(),
         OnMapReadyCallback,
@@ -53,8 +58,6 @@ class MainActivity : AppCompatActivity(),
         makeAddBoxVisible(true)
         makeImageBoxVisible(false)
 
-
-
         add_button.setOnClickListener {
             if(addActionCounter == 0){
                 makeImageBoxVisible(true)
@@ -81,18 +84,23 @@ class MainActivity : AppCompatActivity(),
                 makeAddBoxVisible(false)
                 makeImageBoxVisible(false)
                 makeEditBoxVisible(true)
+                makeEditBoxEditable(false)
                 addActionCounter = 0
             }
 
         }
 
         edit_button.setOnClickListener {
+            makeEditBoxEditable(true)
+
+        }
+
+        edit_save_button.setOnClickListener{
             var center = lastCenter
             center.getAddress().fullAddress = center_address.text.toString()
             center.getModel().name = center_name.text.toString()
             center.getModel().phone = center_phone.text.toString()
             center.getModel().type = tipos_spinner.selectedItem.toString()
-
             persistCenterOnDatabase(center)
             makeEditBoxVisible(false)
             makeAddBoxVisible(true)
@@ -114,7 +122,6 @@ class MainActivity : AppCompatActivity(),
 
     fun makeEditBoxVisible(flag: Boolean){
         if(flag){
-            setTextHintTo("Edite o local selecionado")
             remove_button.visibility = View.VISIBLE
             infoBox.visibility = View.VISIBLE
             edit_button.visibility = View.VISIBLE
@@ -124,11 +131,40 @@ class MainActivity : AppCompatActivity(),
             remove_button.visibility = View.GONE
         }
     }
+    fun makeEditBoxEditable(flag: Boolean){
+        if(flag){
+            edit_box_status.setText("Edição ativada")
+            edit_box_status.setTextColor(Color.GREEN)
+            remove_button.isEnabled = true
+            edit_save_button.isEnabled = true
+            tipos_spinner.isEnabled = true
+            enableEditText(center_name)
+            enableEditText(center_phone)
+            enableEditText(center_address)
+        }else{
+            edit_box_status.setText("Edição desativada")
+            edit_box_status.setTextColor(Color.RED)
+            remove_button.isEnabled = false
+            edit_save_button.isEnabled = false
+            tipos_spinner.isEnabled = false
+            disableEditText(center_name)
+            disableEditText(center_phone)
+            disableEditText(center_address)
+        }
+    }
+
+    fun disableEditText(editText: EditText) {
+        editText.setEnabled(false);
+        editText.setInputType(InputType.TYPE_NULL);
+    }
+
+    fun enableEditText(editText: EditText){
+        editText.setEnabled(true);
+        editText.setInputType(InputType.TYPE_CLASS_TEXT);
+    }
 
     fun makeAddBoxVisible(flag: Boolean){
         if(flag){
-            //infoBox.visibility = View.VISIBLE
-            setTextHintTo("Clique no botao para começar")
             add_button.visibility = View.VISIBLE
         }else{
             //infoBox.visibility = View.GONE
@@ -139,15 +175,10 @@ class MainActivity : AppCompatActivity(),
 
     fun makeImageBoxVisible(flag: Boolean){
         if(flag){
-            setTextHintTo("Selecione o local e clique no botão")
             image_marker.visibility = View.VISIBLE
         }else{
             image_marker.visibility = View.GONE
         }
-    }
-
-    fun setTextHintTo(string: String){
-        text_hint.text = string
     }
 
     fun persistCenterOnDatabase(center: Center){
@@ -184,6 +215,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onMarkerClick(marker: Marker?): Boolean {
+        makeEditBoxEditable(false)
         if(marker != null){
             lastMarker = marker
             var centerDAO: Center? = null

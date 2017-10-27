@@ -12,8 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
@@ -24,18 +22,8 @@
 
         <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <TextView
-                android:id="@+id/text_hint"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:textSize="20dp"
-                android:layout_gravity="bottom"
-                android:text=" TESTANDO"
-                android:textAlignment="center"
-                android:background="@color/colorWhite"
-                android:padding="5dp"/>
-
+            android:layout_height="match_parent"
+            >
 
             <LinearLayout
                 android:id="@+id/infoBox"
@@ -43,9 +31,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:orientation="vertical"
-                android:background="@color/colorWhite"
+                android:background="@drawable/box_shadow"
                 android:padding="10dp"
-                android:layout_marginBottom="35dp">
+                android:layout_marginBottom="5dp">
                 <TextView
                     android:id="@+id/edit_box_status"
                     android:layout_width="match_parent"
@@ -54,13 +42,14 @@
                     android:textAlignment="center"
                     android:textSize="10dp"
                     android:textColor="@color/colorGreen"
-                    android:paddingTop="20dp"/>
+                    android:paddingTop="5dp"/>
                 <Spinner
                     android:id="@+id/tipos_spinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:entries="@array/tipos_arrays"
-                    android:prompt="@string/tipos_prompt" />
+                    android:prompt="@string/tipos_prompt"
+                    android:paddingBottom="10dp" />
                 <EditText
                     android:id="@+id/center_name"
                     android:layout_width="match_parent"
@@ -80,7 +69,37 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Endereço"
-                    android:backgroundTint="@color/colorPrimary"/>
+                    android:backgroundTint="@color/colorPrimary"
+                    android:enabled="false"/>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp">
+                    <Button
+                        android:id="@+id/edit_save_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="Salvar"
+                        android:background="@drawable/box_save"
+                        android:textSize="10dp"
+                        android:textColor="@color/colorWhite"
+                        android:padding="10dp"
+                        android:layout_marginRight="10dp"/>
+                    <Button
+                        android:id="@+id/remove_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="Excluir"
+                        android:background="@drawable/box_remove"
+                        android:textSize="10dp"
+                        android:textColor="@color/colorWhite"
+                        android:padding="10dp"
+                        android:layout_marginLeft="10dp"/>
+
+                </LinearLayout>
             </LinearLayout>
 
             <com.getbase.floatingactionbutton.FloatingActionButton
@@ -99,18 +118,9 @@
                 app:fab_colorNormal="@color/colorPrimary"
                 app:fab_colorPressed="@color/colorWhite"
                 app:fab_icon="@drawable/ic_add_label"
-                android:layout_gravity="bottom"
+                android:layout_gravity="bottom|end"
                 app:layout_anchorGravity="bottom|right|end"
                 android:layout_marginBottom="35dp"/>
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/remove_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fab_colorNormal="@color/colorRed"
-                app:fab_colorPressed="@color/colorWhite"
-                app:fab_icon="@drawable/ic_remove_label"
-                app:layout_anchor="@id/infoBox"
-                app:layout_anchorGravity="top|left|start"/>
             <ImageView
                 android:layout_gravity="center"
                 android:id="@+id/image_marker"
