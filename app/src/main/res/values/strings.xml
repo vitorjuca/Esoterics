@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">EsoAdmin</string>
+    <string name="tipos_prompt">Escolha um tipo</string>
+    <string-array name="tipos_arrays">
+        <item>Umbanda</item>
+        <item>Candomblé</item>
+        <item>Xamanico</item>
+        <item>Esotericos</item>
+        <item>Outro</item>
+    </string-array>
+</resources>

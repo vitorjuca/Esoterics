@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.br.esoterics.esoadmin.MainActivity">
+
+
+    <FrameLayout
+        android:id="@+id/frame_general"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/map"
+            tools:context=".MapsActivity"
+            android:name="com.google.android.gms.maps.SupportMapFragment" />
+
+        <android.support.design.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/text_hint"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:textSize="20dp"
+                android:layout_gravity="bottom"
+                android:text=" TESTANDO"
+                android:textAlignment="center"
+                android:background="@color/colorWhite"
+                android:padding="5dp"/>
+
+
+            <LinearLayout
+                android:id="@+id/infoBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="vertical"
+                android:background="@color/colorWhite"
+                android:padding="10dp"
+                android:layout_marginBottom="35dp">
+                <TextView
+                    android:id="@+id/edit_box_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Modo de edição"
+                    android:textAlignment="center"
+                    android:textSize="10dp"
+                    android:textColor="@color/colorGreen"
+                    android:paddingTop="20dp"/>
+                <Spinner
+                    android:id="@+id/tipos_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/tipos_arrays"
+                    android:prompt="@string/tipos_prompt" />
+                <EditText
+                    android:id="@+id/center_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Nome do estabelecimento"
+                    android:textSize="18dp"
+                    android:backgroundTint="@color/colorPrimary"/>
+
+                <EditText
+                    android:id="@+id/center_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Telefone"
+                    android:backgroundTint="@color/colorPrimary"/>
+                <EditText
+                    android:id="@+id/center_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Endereço"
+                    android:backgroundTint="@color/colorPrimary"/>
+            </LinearLayout>
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/edit_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fab_colorNormal="@color/colorPrimary"
+                app:fab_colorPressed="@color/colorWhite"
+                app:fab_icon="@drawable/ic_editor_label"
+                app:layout_anchor="@id/infoBox"
+                app:layout_anchorGravity="top|right|end"/>
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fab_colorNormal="@color/colorPrimary"
+                app:fab_colorPressed="@color/colorWhite"
+                app:fab_icon="@drawable/ic_add_label"
+                android:layout_gravity="bottom"
+                app:layout_anchorGravity="bottom|right|end"
+                android:layout_marginBottom="35dp"/>
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/remove_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fab_colorNormal="@color/colorRed"
+                app:fab_colorPressed="@color/colorWhite"
+                app:fab_icon="@drawable/ic_remove_label"
+                app:layout_anchor="@id/infoBox"
+                app:layout_anchorGravity="top|left|start"/>
+            <ImageView
+                android:layout_gravity="center"
+                android:id="@+id/image_marker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_location_icon"/>
+        </android.support.design.widget.CoordinatorLayout>
+
+
+
+
+
+
+    </FrameLayout>
+
+
+</RelativeLayout>
