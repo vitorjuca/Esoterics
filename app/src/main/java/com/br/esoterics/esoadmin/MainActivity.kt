@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity(),
         makeAddBoxVisible(true)
         makeImageBoxVisible(false)
 
-        add_button.setOnClickListener {
+        add_marker_button.setOnClickListener {
             if(addActionCounter == 0){
                 makeImageBoxVisible(true)
                 addActionCounter++
@@ -165,10 +165,10 @@ class MainActivity : AppCompatActivity(),
 
     fun makeAddBoxVisible(flag: Boolean){
         if(flag){
-            add_button.visibility = View.VISIBLE
+            add_marker_button.visibility = View.VISIBLE
         }else{
             //infoBox.visibility = View.GONE
-            add_button.visibility = View.GONE
+            add_marker_button.visibility = View.GONE
         }
 
     }

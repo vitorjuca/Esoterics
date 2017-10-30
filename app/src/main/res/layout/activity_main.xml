@@ -33,7 +33,8 @@
                 android:orientation="vertical"
                 android:background="@drawable/box_shadow"
                 android:padding="10dp"
-                android:layout_marginBottom="5dp">
+                android:layout_marginBottom="5dp"
+                android:visibility="gone">
                 <TextView
                     android:id="@+id/edit_box_status"
                     android:layout_width="match_parent"
@@ -110,29 +111,99 @@
                 app:fab_colorPressed="@color/colorWhite"
                 app:fab_icon="@drawable/ic_editor_label"
                 app:layout_anchor="@id/infoBox"
-                app:layout_anchorGravity="top|right|end"/>
+                app:layout_anchorGravity="top|right|end"
+                android:visibility="gone"/>
             <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/add_button"
+                android:id="@+id/adds_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:fab_colorNormal="@color/colorPrimary"
                 app:fab_colorPressed="@color/colorWhite"
                 app:fab_icon="@drawable/ic_add_label"
-                android:layout_gravity="bottom|end"
+                android:layout_gravity="top|end"
                 app:layout_anchorGravity="bottom|right|end"
-                android:layout_marginBottom="35dp"/>
+                android:layout_marginBottom="35dp"
+                android:visibility="gone"/>
+
+            <com.getbase.floatingactionbutton.FloatingActionsMenu
+                android:id="@+id/right_labels"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                app:fab_addButtonColorNormal="@color/colorWhite"
+                app:fab_addButtonColorPressed="@color/colorRed"
+                app:fab_addButtonPlusIconColor="@color/colorPrimary"
+                app:fab_addButtonSize="normal"
+                app:fab_labelsPosition="left"
+                android:layout_gravity="bottom|end"
+                app:fab_labelStyle="@style/menu_labels_style">
+
+
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/add_byaddress_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_colorNormal="@color/colorLightBlue"
+                    app:fab_title="Adicionar por endereço"
+                    app:fab_size="mini"
+                    app:fab_colorPressed="@color/colorWhite"
+                    app:fab_icon="@drawable/ic_editor_label"/>
+
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/add_onmap_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_colorNormal="@color/colorLightBlue"
+                    app:fab_size="mini"
+                    app:fab_title="Adicionar no mapa"
+                    app:fab_colorPressed="@color/colorWhite"
+                    app:fab_icon="@drawable/ic_map"/>
+
+            </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+
             <ImageView
                 android:layout_gravity="center"
                 android:id="@+id/image_marker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ic_location_icon"/>
+                android:background="@drawable/ic_location_icon"
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:id="@+id/add_address_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/box_shadow"
+                android:layout_margin="20dp"
+                android:visibility="gone">
+                <EditText
+                    android:id="@+id/address_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:hint="Adicione seu endereço"
+                    android:backgroundTint="@color/colorPrimary"/>
+            </LinearLayout>
+
+
         </android.support.design.widget.CoordinatorLayout>
 
 
 
-
-
+        <Button
+            android:id="@+id/add_marker_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="40dp"
+            android:layout_gravity="bottom"
+            android:text="Adicionar"
+            android:background="@drawable/fab_label_background"
+            android:textColor="@color/colorWhite"
+            android:visibility="gone"/>
 
     </FrameLayout>
 
