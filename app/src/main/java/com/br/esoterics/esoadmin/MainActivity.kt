@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentActivity;
 import android.text.InputType
 import android.util.Log
 import android.view.View
+import android.view.ViewManager
 import android.widget.Toast
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -27,7 +28,7 @@ import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.ArrayList
 import android.widget.EditText
-
+import android.widget.ToggleButton
 
 
 class MainActivity : AppCompatActivity(),
@@ -55,45 +56,89 @@ class MainActivity : AppCompatActivity(),
         setContentView(R.layout.activity_main)
         connectGoogleApiClient()
         makeEditBoxVisible(false)
-        makeAddBoxVisible(true)
         makeImageBoxVisible(false)
+        makeAddMenuVisible(true)
 
-        add_marker_button.setOnClickListener {
-            if(addActionCounter == 0){
-                makeImageBoxVisible(true)
-                addActionCounter++
-            }else if(addActionCounter == 1){
-                if(googleMap != null){
-                    val myRef = myDatabase.push()
-                    val key = myRef.key
-                    val location = googleMap!!.cameraPosition.target
-                    val marker = MarkerOptions().position(location)
-                            .icon(BitmapDescriptorFactory
-                                    .fromResource(R.drawable.ic_location_icon))
-                            .snippet(key)
-                    val center = Center(key,
-                                        Address(latitude = location.latitude.toString(),
-                                                longitude = location.longitude.toString()),
-                                        Model(),"1")
-                    storageCenters.add(center)
-                    lastCenter = center
-                    googleMap!!.addMarker(marker)
+        add_marker_button.visibility = GONE
 
-                }
-                Toast.makeText(this, "Criado", Toast.LENGTH_SHORT).show()
-                makeAddBoxVisible(false)
-                makeImageBoxVisible(false)
-                makeEditBoxVisible(true)
-                makeEditBoxEditable(false)
-                addActionCounter = 0
+        add_onmap_button.setOnClickListener{
+            makeAddMenuVisible(false)
+            makeImageBoxVisible(true)
+            makeAddMarkerVisible(true)
+        }
+
+        add_marker_button.setOnClickListener{
+            clearEditTexts()
+            if(googleMap != null){
+                val myRef = myDatabase.push()
+                val key = myRef.key
+                val location = googleMap!!.cameraPosition.target
+                val marker = MarkerOptions().position(location)
+                        .icon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.ic_location_icon))
+                        .snippet(key)
+                val center = Center(key,
+                                    Address(latitude = location.latitude.toString(),
+                                            longitude = location.longitude.toString()),
+                                    Model(),"1")
+                storageCenters.add(center)
+                lastCenter = center
+                googleMap!!.addMarker(marker)
             }
 
-        }
-
-        edit_button.setOnClickListener {
+            Toast.makeText(this, "Criado", Toast.LENGTH_SHORT).show()
+            makeAddMarkerVisible(false)
+            makeAddMenuVisible(false)
+            makeImageBoxVisible(false)
+            makeEditBoxVisible(true)
             makeEditBoxEditable(true)
-
+            makeToggleChecked(true)
         }
+
+        toggle_btn.setOnClickListener {
+            if(toggle_btn.isChecked)
+                makeEditBoxEditable(true)
+            else{
+                makeEditBoxEditable(false)
+            }
+        }
+
+//        add_marker_button.setOnClickListener {
+//            if(addActionCounter == 0){
+//                makeImageBoxVisible(true)
+//                addActionCounter++
+//            }else if(addActionCounter == 1){
+//                if(googleMap != null){
+//                    val myRef = myDatabase.push()
+//                    val key = myRef.key
+//                    val location = googleMap!!.cameraPosition.target
+//                    val marker = MarkerOptions().position(location)
+//                            .icon(BitmapDescriptorFactory
+//                                    .fromResource(R.drawable.ic_location_icon))
+//                            .snippet(key)
+//                    val center = Center(key,
+//                                        Address(latitude = location.latitude.toString(),
+//                                                longitude = location.longitude.toString()),
+//                                        Model(),"1")
+//                    storageCenters.add(center)
+//                    lastCenter = center
+//                    googleMap!!.addMarker(marker)
+//
+//                }
+//                Toast.makeText(this, "Criado", Toast.LENGTH_SHORT).show()
+//                makeAddBoxVisible(false)
+//                makeImageBoxVisible(false)
+//                makeEditBoxVisible(true)
+//                makeEditBoxEditable(false)
+//                addActionCounter = 0
+//            }
+//
+//        }
+            edit_button.visibility = GONE
+//        edit_button.setOnClickListener {
+//            makeEditBoxEditable(true)
+//
+//        }
 
         edit_save_button.setOnClickListener{
             var center = lastCenter
@@ -102,8 +147,10 @@ class MainActivity : AppCompatActivity(),
             center.getModel().phone = center_phone.text.toString()
             center.getModel().type = tipos_spinner.selectedItem.toString()
             persistCenterOnDatabase(center)
+            clearEditTexts()
             makeEditBoxVisible(false)
-            makeAddBoxVisible(true)
+            add_button_menu.collapse()
+            makeAddMenuVisible(true)
             Toast.makeText(this, "Salvo", Toast.LENGTH_SHORT).show()
         }
 
@@ -112,7 +159,7 @@ class MainActivity : AppCompatActivity(),
             lastMarker.remove()
             Toast.makeText(this, "Excluido", Toast.LENGTH_SHORT).show()
             makeEditBoxVisible(false)
-            makeAddBoxVisible(true)
+            makeAddMenuVisible(true)
 
         }
 
@@ -120,21 +167,39 @@ class MainActivity : AppCompatActivity(),
         mapFragment.getMapAsync(this)
     }
 
+    fun clearEditTexts(){
+        center_name.setText("")
+        center_phone.setText("")
+        center_address.setText("")
+        tipos_spinner.prompt = "Tipos"
+    }
+    
+    fun makeAddMarkerVisible(flag: Boolean){
+        if(flag){
+            add_marker_button.visibility = VISIBLE
+        }else{
+            add_marker_button.visibility = GONE
+        }
+    }
+
     fun makeEditBoxVisible(flag: Boolean){
         if(flag){
-            remove_button.visibility = View.VISIBLE
-            infoBox.visibility = View.VISIBLE
-            edit_button.visibility = View.VISIBLE
+            infoBox.visibility = VISIBLE
+            //edit_button.visibility = VISIBLE
         }else{
-            infoBox.visibility = View.GONE
-            edit_button.visibility = View.GONE
-            remove_button.visibility = View.GONE
+            infoBox.visibility = GONE
         }
+    }
+    fun makeToggleChecked(flag: Boolean){
+        if(flag)
+            toggle_btn.isChecked = true
+        else
+            toggle_btn.isChecked = false
     }
     fun makeEditBoxEditable(flag: Boolean){
         if(flag){
-            edit_box_status.setText("Edição ativada")
-            edit_box_status.setTextColor(Color.GREEN)
+            remove_button.visibility = VISIBLE
+            edit_save_button.visibility = VISIBLE
             remove_button.isEnabled = true
             edit_save_button.isEnabled = true
             tipos_spinner.isEnabled = true
@@ -142,8 +207,9 @@ class MainActivity : AppCompatActivity(),
             enableEditText(center_phone)
             enableEditText(center_address)
         }else{
-            edit_box_status.setText("Edição desativada")
-            edit_box_status.setTextColor(Color.RED)
+            makeToggleChecked(false)
+            remove_button.visibility = GONE
+            edit_save_button.visibility = GONE
             remove_button.isEnabled = false
             edit_save_button.isEnabled = false
             tipos_spinner.isEnabled = false
@@ -163,21 +229,22 @@ class MainActivity : AppCompatActivity(),
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
     }
 
-    fun makeAddBoxVisible(flag: Boolean){
+    fun makeAddMenuVisible(flag: Boolean){
         if(flag){
-            add_marker_button.visibility = View.VISIBLE
-        }else{
-            //infoBox.visibility = View.GONE
-            add_marker_button.visibility = View.GONE
-        }
 
+            add_button_menu.visibility = VISIBLE
+        }else{
+            //infoBox.visibility = GONE
+            add_button_menu.collapse()
+            add_button_menu.visibility = GONE
+        }
     }
 
     fun makeImageBoxVisible(flag: Boolean){
         if(flag){
-            image_marker.visibility = View.VISIBLE
+            image_marker.visibility = VISIBLE
         }else{
-            image_marker.visibility = View.GONE
+            image_marker.visibility = GONE
         }
     }
 
@@ -235,7 +302,8 @@ class MainActivity : AppCompatActivity(),
             lastCenter.setKey(marker.snippet)
         }
         makeEditBoxVisible(true)
-        makeAddBoxVisible(false)
+        makeAddMarkerVisible(false)
+        makeAddMenuVisible(false)
         makeImageBoxVisible(false)
         return true
     }
@@ -243,10 +311,11 @@ class MainActivity : AppCompatActivity(),
 
 
     override fun onMapClick(location: LatLng?) {
-        makeAddBoxVisible(true)
+        add_button_menu.collapse()
+        makeAddMenuVisible(true)
         makeEditBoxVisible(false)
         makeImageBoxVisible(false)
-        addActionCounter = 0
+        makeAddMarkerVisible(false)
     }
 
     override fun onMapLongClick(location: LatLng?) {
