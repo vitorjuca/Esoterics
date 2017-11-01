@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">EsoAdmin</string>
+    <string name="app_name">Esoterics Manager</string>
     <string name="tipos_prompt">Escolha um tipo</string>
     <string-array name="tipos_arrays">
         <item>Umbanda</item>

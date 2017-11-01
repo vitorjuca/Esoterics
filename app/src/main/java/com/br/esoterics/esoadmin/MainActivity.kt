@@ -2,34 +2,26 @@ package com.br.esoterics.esoadmin
 
 import android.annotation.SuppressLint
 import android.graphics.Color
-import android.support.v7.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
-import android.support.annotation.ColorRes
-import android.support.design.widget.FloatingActionButton
+import android.support.annotation.RequiresApi
 import android.support.v4.app.ActivityCompat
-
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity
 import android.text.InputType
 import android.util.Log
-import android.view.View
-import android.view.ViewManager
+import android.widget.EditText
 import android.widget.Toast
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.ArrayList
-import android.widget.EditText
-import android.widget.ToggleButton
-
 
 class MainActivity : AppCompatActivity(),
         OnMapReadyCallback,
@@ -40,11 +32,9 @@ class MainActivity : AppCompatActivity(),
         GoogleMap.OnMapLongClickListener {
 
 
-
     private var googleMap: GoogleMap? = null
     private val locationPermissionManager = LocationPermissionManager()
     private var googleApiClient: GoogleApiClient? = null
-    private var addActionCounter: Int = 0
     private val myDatabase: DatabaseReference = FirebaseDatabase.getInstance().getReference()
     private val storageCenters = ArrayList<Center>()
     private var lastCenter = Center("", Address(), Model(), "")
@@ -54,28 +44,22 @@ class MainActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         connectGoogleApiClient()
-        makeEditBoxVisible(false)
-        makeImageBoxVisible(false)
-        makeAddMenuVisible(true)
 
-        add_marker_button.visibility = GONE
+        showMenuBox(true)
 
-        add_onmap_button.setOnClickListener{
-            makeAddMenuVisible(false)
-            makeImageBoxVisible(true)
-            makeAddMarkerVisible(true)
+        addOnMapButton.setOnClickListener{
+            showMarkerBox(true)
         }
 
-        add_marker_button.setOnClickListener{
-            clearEditTexts()
+        addMarkerButton.setOnClickListener{
             if(googleMap != null){
                 val myRef = myDatabase.push()
                 val key = myRef.key
                 val location = googleMap!!.cameraPosition.target
                 val marker = MarkerOptions().position(location)
-                        .icon(BitmapDescriptorFactory
-                                .fromResource(R.drawable.ic_location_icon))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_icon))
                         .snippet(key)
                 val center = Center(key,
                                     Address(latitude = location.latitude.toString(),
@@ -85,167 +69,135 @@ class MainActivity : AppCompatActivity(),
                 lastCenter = center
                 googleMap!!.addMarker(marker)
             }
-
-            Toast.makeText(this, "Criado", Toast.LENGTH_SHORT).show()
-            makeAddMarkerVisible(false)
-            makeAddMenuVisible(false)
-            makeImageBoxVisible(false)
-            makeEditBoxVisible(true)
+            makeSwitchChecked(true)
             makeEditBoxEditable(true)
-            makeToggleChecked(true)
+            showEditBox(true)
         }
 
-        toggle_btn.setOnClickListener {
-            if(toggle_btn.isChecked)
+        switchButton.setOnClickListener {
+            if(switchButton.isChecked)
                 makeEditBoxEditable(true)
             else{
                 makeEditBoxEditable(false)
             }
         }
 
-//        add_marker_button.setOnClickListener {
-//            if(addActionCounter == 0){
-//                makeImageBoxVisible(true)
-//                addActionCounter++
-//            }else if(addActionCounter == 1){
-//                if(googleMap != null){
-//                    val myRef = myDatabase.push()
-//                    val key = myRef.key
-//                    val location = googleMap!!.cameraPosition.target
-//                    val marker = MarkerOptions().position(location)
-//                            .icon(BitmapDescriptorFactory
-//                                    .fromResource(R.drawable.ic_location_icon))
-//                            .snippet(key)
-//                    val center = Center(key,
-//                                        Address(latitude = location.latitude.toString(),
-//                                                longitude = location.longitude.toString()),
-//                                        Model(),"1")
-//                    storageCenters.add(center)
-//                    lastCenter = center
-//                    googleMap!!.addMarker(marker)
-//
-//                }
-//                Toast.makeText(this, "Criado", Toast.LENGTH_SHORT).show()
-//                makeAddBoxVisible(false)
-//                makeImageBoxVisible(false)
-//                makeEditBoxVisible(true)
-//                makeEditBoxEditable(false)
-//                addActionCounter = 0
-//            }
-//
-//        }
-            edit_button.visibility = GONE
-//        edit_button.setOnClickListener {
-//            makeEditBoxEditable(true)
-//
-//        }
-
-        edit_save_button.setOnClickListener{
+        saveButton.setOnClickListener{
             var center = lastCenter
-            center.getAddress().fullAddress = center_address.text.toString()
-            center.getModel().name = center_name.text.toString()
-            center.getModel().phone = center_phone.text.toString()
-            center.getModel().type = tipos_spinner.selectedItem.toString()
+            center.getAddress().fullAddress = centerAddress.text.toString()
+            center.getModel().name = centerName.text.toString()
+            center.getModel().phone = centerPhone.text.toString()
+            center.getModel().type = centerType.selectedItem.toString()
             persistCenterOnDatabase(center)
             clearEditTexts()
-            makeEditBoxVisible(false)
-            add_button_menu.collapse()
-            makeAddMenuVisible(true)
-            Toast.makeText(this, "Salvo", Toast.LENGTH_SHORT).show()
+            showEditBox(false)
+            showMenuBox(true)
         }
 
-        remove_button.setOnClickListener {
+        removeButton.setOnClickListener {
             removeCenterFromDatabase(lastCenter)
             lastMarker.remove()
-            Toast.makeText(this, "Excluido", Toast.LENGTH_SHORT).show()
-            makeEditBoxVisible(false)
-            makeAddMenuVisible(true)
-
+            showEditBox(false)
+            showMenuBox(true)
         }
 
         val mapFragment = map as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
+    
+    fun showEditBox(flag: Boolean){
+        if(flag){
+            editBox.visibility = VISIBLE
+            showMarkerBox(false)
+            showMenuBox(false)
+        }else{
+            editBox.visibility = GONE
+            clearEditTexts()
+            makeSwitchChecked(false)
+        }
+    }
+
+    fun showMenuBox(flag: Boolean){
+        if(flag){
+            addButtonMenu.collapse()
+            addButtonMenu.visibility = VISIBLE
+            showEditBox(false)
+            showMarkerBox(false)
+        }else{
+            addButtonMenu.collapse()
+            addButtonMenu.visibility = GONE
+        }
+    }
+
+    fun showMarkerBox(flag: Boolean){
+        if(flag){
+            imageMarker.visibility = VISIBLE
+            addMarkerButton.visibility = VISIBLE
+            showEditBox(false)
+            showMenuBox(false)
+        }else{
+            imageMarker.visibility = GONE
+            addMarkerButton.visibility = GONE
+        }
+    }
+
+    fun sendToast(data: String){
+        Toast.makeText(this, data, Toast.LENGTH_SHORT).show()
+    }
 
     fun clearEditTexts(){
-        center_name.setText("")
-        center_phone.setText("")
-        center_address.setText("")
-        tipos_spinner.prompt = "Tipos"
+        centerName.setText("")
+        centerPhone.setText("")
+        centerAddress.setText("")
+        centerWorktime.setText("")
+        centerType.prompt = "Tipos"
     }
     
-    fun makeAddMarkerVisible(flag: Boolean){
-        if(flag){
-            add_marker_button.visibility = VISIBLE
-        }else{
-            add_marker_button.visibility = GONE
-        }
+
+    fun makeSwitchChecked(flag: Boolean){
+        if(flag)
+            switchButton.isChecked = true
+        else
+            switchButton.isChecked = false
     }
 
-    fun makeEditBoxVisible(flag: Boolean){
-        if(flag){
-            infoBox.visibility = VISIBLE
-            //edit_button.visibility = VISIBLE
-        }else{
-            infoBox.visibility = GONE
-        }
-    }
-    fun makeToggleChecked(flag: Boolean){
-        if(flag)
-            toggle_btn.isChecked = true
-        else
-            toggle_btn.isChecked = false
-    }
     fun makeEditBoxEditable(flag: Boolean){
         if(flag){
-            remove_button.visibility = VISIBLE
-            edit_save_button.visibility = VISIBLE
-            remove_button.isEnabled = true
-            edit_save_button.isEnabled = true
-            tipos_spinner.isEnabled = true
-            enableEditText(center_name)
-            enableEditText(center_phone)
-            enableEditText(center_address)
+            removeButton.background = getDrawable(R.drawable.box_remove)
+            saveButton.background = getDrawable(R.drawable.box_save)
+            removeButton.setTextColor(Color.WHITE)
+            saveButton.setTextColor(Color.WHITE)
+            removeButton.isEnabled = true
+            saveButton.isEnabled = true
+            centerType.isEnabled = true
+            enableEditText(centerWorktime)
+            enableEditText(centerName)
+            enableEditText(centerPhone)
+            enableEditText(centerAddress)
         }else{
-            makeToggleChecked(false)
-            remove_button.visibility = GONE
-            edit_save_button.visibility = GONE
-            remove_button.isEnabled = false
-            edit_save_button.isEnabled = false
-            tipos_spinner.isEnabled = false
-            disableEditText(center_name)
-            disableEditText(center_phone)
-            disableEditText(center_address)
+            makeSwitchChecked(false)
+            removeButton.background = getDrawable(R.drawable.non_editable)
+            saveButton.background = getDrawable(R.drawable.non_editable)
+            removeButton.setTextColor(Color.LTGRAY)
+            saveButton.setTextColor(Color.LTGRAY)
+            removeButton.isEnabled = false
+            saveButton.isEnabled = false
+            centerType.isEnabled = false
+            disableEditText(centerWorktime)
+            disableEditText(centerName)
+            disableEditText(centerPhone)
+            disableEditText(centerAddress)
         }
     }
 
     fun disableEditText(editText: EditText) {
         editText.setEnabled(false);
-        editText.setInputType(InputType.TYPE_NULL);
+//        editText.setInputType(InputType.TYPE_NULL);
     }
 
     fun enableEditText(editText: EditText){
         editText.setEnabled(true);
-        editText.setInputType(InputType.TYPE_CLASS_TEXT);
-    }
-
-    fun makeAddMenuVisible(flag: Boolean){
-        if(flag){
-
-            add_button_menu.visibility = VISIBLE
-        }else{
-            //infoBox.visibility = GONE
-            add_button_menu.collapse()
-            add_button_menu.visibility = GONE
-        }
-    }
-
-    fun makeImageBoxVisible(flag: Boolean){
-        if(flag){
-            image_marker.visibility = VISIBLE
-        }else{
-            image_marker.visibility = GONE
-        }
+//        editText.setInputType(InputType.TYPE_CLASS_TEXT);
     }
 
     fun persistCenterOnDatabase(center: Center){
@@ -257,9 +209,9 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun loadEditBoxWithInfoFrom(center: Center){
-        center_name.setText(center.getModel().name)
-        center_phone.setText(center.getModel().phone)
-        center_address.setText(center.getAddress().fullAddress)
+        centerName.setText(center.getModel().name)
+        centerPhone.setText(center.getModel().phone)
+        centerAddress.setText(center.getAddress().fullAddress)
     }
 
     @SuppressLint("MissingPermission")
@@ -301,21 +253,15 @@ class MainActivity : AppCompatActivity(),
 
             lastCenter.setKey(marker.snippet)
         }
-        makeEditBoxVisible(true)
-        makeAddMarkerVisible(false)
-        makeAddMenuVisible(false)
-        makeImageBoxVisible(false)
+        showEditBox(true)
         return true
     }
 
 
 
     override fun onMapClick(location: LatLng?) {
-        add_button_menu.collapse()
-        makeAddMenuVisible(true)
-        makeEditBoxVisible(false)
-        makeImageBoxVisible(false)
-        makeAddMarkerVisible(false)
+        addButtonMenu.collapse()
+        showMenuBox(true)
     }
 
     override fun onMapLongClick(location: LatLng?) {
@@ -383,7 +329,8 @@ class MainActivity : AppCompatActivity(),
                 .addConnectionCallbacks(this)
                 .addApi(LocationServices.API)//Be aware of state of the connection
                 .build()
-        //Tentando conexão com o Google API. Se a tentativa for bem sucessidade, o método onConnected() será chamado, senão, o método onConnectionFailed() será chamado.
+        //Tentando conexão com o Google API. Se a tentativa for bem sucessidade, o método
+        // onConnected() será chamado, senão, o método onConnectionFailed() será chamado.
         googleApiClient!!.connect()
     }
 
