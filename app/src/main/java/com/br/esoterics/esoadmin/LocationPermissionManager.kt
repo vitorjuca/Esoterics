@@ -18,7 +18,7 @@ class LocationPermissionManager {
 
     fun requestPermissions(activity: Activity) {
         val permissions = arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
-        ActivityCompat.requestPermissions(activity, permissions, REQUEST_CODE_PERMISSIONS)
+        ActivityCompat.requestPermissions(activity, permissions, com.br.esoterics.esoadmin.REQUEST_CODE_PERMISSIONS)
     }
 
     fun isPermissionGranted(activity: Activity): Boolean {

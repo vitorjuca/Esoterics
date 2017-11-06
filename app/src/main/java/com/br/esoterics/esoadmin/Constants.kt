@@ -15,3 +15,5 @@ val ADDRESS = "address"
 val MODEL = "model"
 val VISIBLE = View.VISIBLE
 val GONE = View.GONE
+val EDIT = "EDIT"
+val VISUAL = "VISUAL"

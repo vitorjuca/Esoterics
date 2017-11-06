@@ -1,7 +1,6 @@
 package com.br.esoterics.esoadmin
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
@@ -19,14 +18,14 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.*
-import kotlinx.android.synthetic.main.activity_main.*
 import android.location.Geocoder
 import android.location.Location
 import com.br.esoterics.esoadmin.LocationPermissionManager
+import kotlinx.android.synthetic.editMode.activity_map.*
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(),
+class MapActivity : AppCompatActivity(),
         OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
@@ -40,23 +39,127 @@ class MainActivity : AppCompatActivity(),
     private val myDatabase: DatabaseReference = FirebaseDatabase.getInstance().getReference()
     private val storageCenters = ArrayList<com.br.esoterics.esoadmin.Center>()
     private var lastCenter = Center("", Address(), Model(), "")
+    private var lastCenterCheck: Boolean = false
     private lateinit var lastMarker: Marker
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        //connectGoogleApiClient()
-        log("MAIN")
+        setContentView(R.layout.activity_map)
+        connectGoogleApiClient()
+
         showMenuBox(true)
 
-        var intent = Intent(this,MapActivity::class.java)
-        startActivity(intent)
+
+        addOnMapButton.setOnClickListener{
+            showMarkerBox(true)
+        }
+
+        addMarkerButton.setOnClickListener{
+            if(googleMap != null){
 
 
+                val myRef = myDatabase.push()
+                val key = myRef.key
+                val location = googleMap!!.cameraPosition.target
+                val marker = MarkerOptions().position(location)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_icon))
+                        .snippet(key)
+
+                val geocoder = Geocoder(this, Locale.getDefault())
+                var addresses: List<android.location.Address>
+
+                try {
+
+                    addresses = geocoder.getFromLocation(location.latitude, location.longitude,1)
+                    log(addresses.get(0).locality)
+                    log(addresses.get(0).toString())
+                    log(addresses.get(0).subLocality)
+                    log(addresses.get(0).getAddressLine(0))
+                    centerAddress.setText(addresses.get(0).thoroughfare
+                                                            .plus(", ")
+                                                            .plus(addresses.get(0).featureName.toString()))
+
+                }catch (e: Exception){
+
+                }
+
+                val center = Center(key,
+                        Address(latitude = location.latitude.toString(),
+                                longitude = location.longitude.toString()),
+                        Model(),"1")
+                storageCenters.add(center)
+                lastCenter = center
+                googleMap!!.addMarker(marker)
+            }
+            makeSwitchChecked(true)
+            makeEditBoxEditable(true)
+            showEditBox(true)
+        }
+
+        switchButton.setOnClickListener {
+            if(switchButton.isChecked)
+                makeEditBoxEditable(true)
+            else{
+                makeEditBoxEditable(false)
+            }
+        }
+
+        saveButton.setOnClickListener{
+            if(validateEditBox()){
+                var center = lastCenter
+                center.getAddress().fullAddress = centerAddress.text.toString()
+                center.getModel().name = centerName.text.toString()
+                center.getModel().phone = centerPhone.text.toString()
+                center.getModel().type = centerType.selectedItem.toString()
+                center.getModel().time_start = centerStartTime.selectedItem.toString()
+                center.getModel().time_end = centerEndTime.selectedItem.toString()
+                center.getAddress().fullAddress = centerAddress.text.toString()
+                persistCenterOnDatabase(center)
+                clearEditTexts()
+                showEditBox(false)
+                showMenuBox(true)
+            }
+        }
+
+        removeButton.setOnClickListener {
+            if(lastCenter.getKey() != ""){
+                removeCenterFromDatabase(lastCenter)
+                lastMarker.remove()
+                showEditBox(false)
+                showMenuBox(true)
+            }else{
+                sendToast("Local ainda não foi salvo")
+            }
+
+        }
+
+        val mapFragment = map as SupportMapFragment
+        mapFragment.getMapAsync(this)
     }
 
-    
+    fun validateEditBox(): Boolean{
+        var flag = true
+        if(centerAddress.text.toString().equals("")){
+            centerAddress.setError("Endereço necessário")
+            flag = false
+        }
+        if(centerName.text.toString().equals("")){
+            centerName.setError("Nome necessário")
+            flag = false
+        }
+        if (centerPhone.text.toString().equals("")){
+            centerPhone.setError("Telefone necessário")
+            flag = false
+        }
+        if(centerAddress.text.toString().equals("")){
+            centerAddress.setError("Endereço necessário")
+            flag = false
+        }
+        return flag
+    }
+
+
     fun showEditBox(flag: Boolean){
         if(flag){
             editBox.visibility = com.br.esoterics.esoadmin.VISIBLE
@@ -101,10 +204,9 @@ class MainActivity : AppCompatActivity(),
         centerName.setText("")
         centerPhone.setText("")
         centerAddress.setText("")
-        centerWorktime.setText("")
         centerType.prompt = "Tipos"
     }
-    
+
 
     fun makeSwitchChecked(flag: Boolean){
         if(flag)
@@ -122,7 +224,10 @@ class MainActivity : AppCompatActivity(),
             removeButton.isEnabled = true
             saveButton.isEnabled = true
             centerType.isEnabled = true
-            enableEditText(centerWorktime)
+            centerStartTime.isEnabled = true
+            centerEndTime.isEnabled = true
+            txtStart.setTextColor(Color.DKGRAY)
+            txtEnd.setTextColor(Color.DKGRAY)
             enableEditText(centerName)
             enableEditText(centerPhone)
             enableEditText(centerAddress)
@@ -135,7 +240,10 @@ class MainActivity : AppCompatActivity(),
             removeButton.isEnabled = false
             saveButton.isEnabled = false
             centerType.isEnabled = false
-            disableEditText(centerWorktime)
+            centerStartTime.isEnabled = false
+            centerEndTime.isEnabled = false
+            txtStart.setTextColor(Color.LTGRAY)
+            txtEnd.setTextColor(Color.LTGRAY)
             disableEditText(centerName)
             disableEditText(centerPhone)
             disableEditText(centerAddress)
@@ -153,7 +261,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun persistCenterOnDatabase(center: com.br.esoterics.esoadmin.Center){
-            myDatabase.child("Centers").child(center.getKey()).setValue(center)
+        myDatabase.child("Centers").child(center.getKey()).setValue(center)
     }
 
     fun removeCenterFromDatabase(center: com.br.esoterics.esoadmin.Center){
@@ -214,6 +322,9 @@ class MainActivity : AppCompatActivity(),
     override fun onMapClick(location: LatLng?) {
         addButtonMenu.collapse()
         showMenuBox(true)
+        if(lastMarker.snippet.isNullOrBlank()){
+            lastMarker.remove()
+        }
     }
 
     override fun onMapLongClick(location: LatLng?) {
@@ -244,7 +355,8 @@ class MainActivity : AppCompatActivity(),
                                             country = address.child("country").value.toString(),
                                             latitude = address.child("latitude").value.toString(),
                                             longitude = address.child("longitude").value.toString(),
-                                            neighborhood = address.child("neighborhood").value.toString()),
+                                            neighborhood = address.child("neighborhood").value.toString(),
+                                            fullAddress = address.child("fullAddress").value.toString()),
                                     Model(  name = model.child("name").value.toString(),
                                             phone = model.child("phone").value.toString(),
                                             time_end = model.child("time_end").value.toString(),

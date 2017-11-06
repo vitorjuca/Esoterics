@@ -10,7 +10,7 @@ import java.io.Serializable
 
 class Center : Serializable{
     private var address: Address
-    private var model:Model
+    private var model: Model
     private var key: String = ""
     private var icon: String = ""
 
@@ -29,11 +29,11 @@ class Center : Serializable{
         this.key = key
     }
 
-    fun getAddress() : Address{
+    fun getAddress() : Address {
         return this.address
     }
 
-    fun getModel():Model{
+    fun getModel(): Model {
         return this.model
     }
 
