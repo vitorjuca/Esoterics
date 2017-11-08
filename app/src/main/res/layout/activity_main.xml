@@ -5,203 +5,32 @@
     android:layout_height="match_parent"
     tools:context="com.br.esoterics.esoadmin.MainActivity">
 
-
-    <FrameLayout
-        android:id="@+id/frame_general"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/map"
-            tools:context=".MapsActivity"
-            android:name="com.google.android.gms.maps.SupportMapFragment" />
-
-        <android.support.design.widget.CoordinatorLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
-
-            <LinearLayout
-                android:id="@+id/editBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:orientation="vertical"
-                android:background="@drawable/box_shadow"
-                android:padding="10dp"
-                android:visibility="visible">
-
-                <Switch
-                    android:id="@+id/switchButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:layout_gravity="right"
-                    android:textColor="@color/colorLightBlue"
-                    android:checked="false"
-                    android:text="Editar " />
-                <Spinner
-                    android:id="@+id/centerType"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:entries="@array/tipos_arrays"
-                    android:prompt="@string/tipos_prompt"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="30dp"
-                    android:layout_marginEnd="30dp"
-                    android:padding="10dp"/>
-                <EditText
-                    android:id="@+id/centerName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Nome do estabelecimento"
-                    android:textSize="18dp"
-                    android:backgroundTint="@color/colorPrimary"/>
-                <EditText
-                    android:id="@+id/centerPhone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="phone"
-                    android:hint="Telefone"
-                    android:backgroundTint="@color/colorPrimary"/>
-                <EditText
-                    android:id="@+id/centerWorktime"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Horario de funcionamento"
-                    android:backgroundTint="@color/colorPrimary"
-                    android:enabled="false"/>
-                <EditText
-                    android:id="@+id/centerAddress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Endereço"
-                    android:backgroundTint="@color/colorPrimary"
-                    android:enabled="false"/>
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp">
-                    <Button
-                        android:id="@+id/saveButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:text="Salvar"
-                        android:background="@drawable/box_save"
-                        android:textSize="10dp"
-                        android:textColor="@color/colorWhite"
-                        android:padding="10dp"
-                        android:layout_marginRight="10dp"/>
-                    <Button
-                        android:id="@+id/removeButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:text="Excluir"
-                        android:background="@drawable/box_remove"
-                        android:textSize="10dp"
-                        android:textColor="@color/colorWhite"
-                        android:padding="10dp"
-                        android:layout_marginLeft="10dp"/>
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/edit_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fab_colorNormal="@color/colorPrimary"
-                app:fab_colorPressed="@color/colorWhite"
-                app:fab_icon="@drawable/ic_editor_label"
-                app:layout_anchor="@id/editBox"
-                app:layout_anchorGravity="top|right|end"
-                android:visibility="gone"/>
-
-            <com.getbase.floatingactionbutton.FloatingActionsMenu
-                android:id="@+id/addButtonMenu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
-                app:fab_addButtonColorNormal="@color/colorWhite"
-                app:fab_addButtonColorPressed="@color/colorRed"
-                app:fab_addButtonPlusIconColor="@color/colorPrimary"
-                app:fab_addButtonSize="normal"
-                app:fab_labelsPosition="left"
-                android:layout_gravity="bottom|end"
-                app:fab_labelStyle="@style/menu_labels_style">
-
-                <com.getbase.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/addByAddressButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:fab_colorNormal="@color/colorLightBlue"
-                    app:fab_title="Adicionar por endereço"
-                    app:fab_size="mini"
-                    app:fab_colorPressed="@color/colorWhite"
-                    app:fab_icon="@drawable/ic_editor_label"
-                    android:visibility="gone"/>
-
-                <com.getbase.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/addOnMapButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:fab_colorNormal="@color/colorLightBlue"
-                    app:fab_size="mini"
-                    app:fab_title="Adicionar no mapa"
-                    app:fab_colorPressed="@color/colorWhite"
-                    app:fab_icon="@drawable/ic_map"/>
-            </com.getbase.floatingactionbutton.FloatingActionsMenu>
-
-
-            <ImageView
-                android:layout_gravity="center"
-                android:id="@+id/imageMarker"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_circle_location"
-                android:visibility="gone"
-                android:layout_marginBottom="10dp"/>
-            <LinearLayout
-                android:id="@+id/addAddresLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorWhite"
-                android:layout_margin="5dp"
-                android:visibility="gone">
-                <EditText
-                    android:id="@+id/addressEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="top"
-                    android:hint="Adicione seu endereço"
-                    android:backgroundTint="@color/colorPrimary"/>
-            </LinearLayout>
-
-        </android.support.design.widget.CoordinatorLayout>
-
-        <Button
-            android:id="@+id/addMarkerButton"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/ic_launcher_mandala"
+            android:layout_gravity="center"
+            android:padding="10dp"/>
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="40dp"
-            android:layout_gravity="bottom"
-            android:text="Adicionar"
-            android:background="@drawable/fab_label_background"
-            android:textColor="@color/colorWhite"
-            android:visibility="gone"/>
+            android:text="Esotéricos"
+            android:textAlignment="center"
+            android:layout_margin="10dp"/>
+        <Button
+            android:id="@+id/startButton"
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/box_save"
+            android:text="Começar"
+            android:textColor="@color/colorWhite"/>
+    </LinearLayout>
 
-    </FrameLayout>
 
 </RelativeLayout>

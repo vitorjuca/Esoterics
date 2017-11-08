@@ -8,37 +8,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:6239368000:android:ba50d9102b451710",
-        "android_client_info": {
-          "package_name": "com.br.esoterics.esotericsgerenciador"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "6239368000-k4h2k4vd4bn6e7ckqlfhjubh3as054em.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBXwtnCqkgzkZRwewNcZHyh52b5W8ListQ"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:6239368000:android:b53f377497f432b1",
         "android_client_info": {
           "package_name": "com.br.esoterics.esoadmin"
@@ -83,9 +52,40 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:6239368000:android:2e04cf635a055a2b",
+        "mobilesdk_app_id": "1:6239368000:android:8b341524851db982",
         "android_client_info": {
-          "package_name": "com.br.esoterics.visual"
+          "package_name": "com.br.esoterics.esoadmin.visualmode"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "6239368000-k4h2k4vd4bn6e7ckqlfhjubh3as054em.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXwtnCqkgzkZRwewNcZHyh52b5W8ListQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:6239368000:android:df54495ca7ddb7aa",
+        "android_client_info": {
+          "package_name": "com.br.esoterics.esoadmin.editmode"
         }
       },
       "oauth_client": [

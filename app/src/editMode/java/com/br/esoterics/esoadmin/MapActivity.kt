@@ -19,8 +19,8 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.*
 import android.location.Geocoder
-import android.location.Location
-import com.br.esoterics.esoadmin.LocationPermissionManager
+import com.br.esoterics.esoadmin.*
+import com.br.esoterics.esoadmin.R
 import kotlinx.android.synthetic.editMode.activity_map.*
 import java.util.*
 
@@ -37,7 +37,7 @@ class MapActivity : AppCompatActivity(),
     private val locationPermissionManager = LocationPermissionManager()
     private var googleApiClient: GoogleApiClient? = null
     private val myDatabase: DatabaseReference = FirebaseDatabase.getInstance().getReference()
-    private val storageCenters = ArrayList<com.br.esoterics.esoadmin.Center>()
+    private val storageCenters = ArrayList<Center>()
     private var lastCenter = Center("", Address(), Model(), "")
     private var lastCenterCheck: Boolean = false
     private lateinit var lastMarker: Marker
@@ -87,7 +87,7 @@ class MapActivity : AppCompatActivity(),
                 val center = Center(key,
                         Address(latitude = location.latitude.toString(),
                                 longitude = location.longitude.toString()),
-                        Model(),"1")
+                        Model(), "1")
                 storageCenters.add(center)
                 lastCenter = center
                 googleMap!!.addMarker(marker)
@@ -162,11 +162,11 @@ class MapActivity : AppCompatActivity(),
 
     fun showEditBox(flag: Boolean){
         if(flag){
-            editBox.visibility = com.br.esoterics.esoadmin.VISIBLE
+            editBox.visibility = VISIBLE
             showMarkerBox(false)
             showMenuBox(false)
         }else{
-            editBox.visibility = com.br.esoterics.esoadmin.GONE
+            editBox.visibility = GONE
             clearEditTexts()
             makeSwitchChecked(false)
         }
@@ -175,24 +175,24 @@ class MapActivity : AppCompatActivity(),
     fun showMenuBox(flag: Boolean){
         if(flag){
             addButtonMenu.collapse()
-            addButtonMenu.visibility = com.br.esoterics.esoadmin.VISIBLE
+            addButtonMenu.visibility = VISIBLE
             showEditBox(false)
             showMarkerBox(false)
         }else{
             addButtonMenu.collapse()
-            addButtonMenu.visibility = com.br.esoterics.esoadmin.GONE
+            addButtonMenu.visibility = GONE
         }
     }
 
     fun showMarkerBox(flag: Boolean){
         if(flag){
-            imageMarker.visibility = com.br.esoterics.esoadmin.VISIBLE
-            addMarkerButton.visibility = com.br.esoterics.esoadmin.VISIBLE
+            imageMarker.visibility = VISIBLE
+            addMarkerButton.visibility = VISIBLE
             showEditBox(false)
             showMenuBox(false)
         }else{
-            imageMarker.visibility = com.br.esoterics.esoadmin.GONE
-            addMarkerButton.visibility = com.br.esoterics.esoadmin.GONE
+            imageMarker.visibility = GONE
+            addMarkerButton.visibility = GONE
         }
     }
 
@@ -260,15 +260,15 @@ class MapActivity : AppCompatActivity(),
 //        editText.setInputType(InputType.TYPE_CLASS_TEXT);
     }
 
-    fun persistCenterOnDatabase(center: com.br.esoterics.esoadmin.Center){
+    fun persistCenterOnDatabase(center: Center){
         myDatabase.child("Centers").child(center.getKey()).setValue(center)
     }
 
-    fun removeCenterFromDatabase(center: com.br.esoterics.esoadmin.Center){
+    fun removeCenterFromDatabase(center: Center){
         myDatabase.child("Centers").child(center.getKey()).removeValue()
     }
 
-    fun loadEditBoxWithInfoFrom(center: com.br.esoterics.esoadmin.Center){
+    fun loadEditBoxWithInfoFrom(center: Center){
         centerName.setText(center.getModel().name)
         centerPhone.setText(center.getModel().phone)
         centerAddress.setText(center.getAddress().fullAddress)
@@ -297,9 +297,9 @@ class MapActivity : AppCompatActivity(),
         makeEditBoxEditable(false)
         if(marker != null){
             lastMarker = marker
-            var centerDAO: com.br.esoterics.esoadmin.Center? = null
+            var centerDAO: Center? = null
             var flag = false
-            for (center: com.br.esoterics.esoadmin.Center in storageCenters){
+            for (center: Center in storageCenters){
                 if(center.getKey().equals(marker.snippet)){
                     centerDAO = center
                     flag = true
@@ -332,7 +332,7 @@ class MapActivity : AppCompatActivity(),
     }
 
     fun getAllLocations(){
-        val dbQuery = myDatabase.child(com.br.esoterics.esoadmin.CENTERS)
+        val dbQuery = myDatabase.child(CENTERS)
         dbQuery.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {}
             override fun onDataChange(dataSnapshot: DataSnapshot?) {
@@ -344,8 +344,8 @@ class MapActivity : AppCompatActivity(),
                             Log.d("DENTRO DO FOR", "Adicionando classes")
                             val key = center.key
                             Log.d("KEY",key)
-                            val address = center.child(com.br.esoterics.esoadmin.ADDRESS)
-                            val model = center.child(com.br.esoterics.esoadmin.MODEL)
+                            val address = center.child(ADDRESS)
+                            val model = center.child(MODEL)
                             val myCenter = Center(
                                     center.key,
                                     Address(street = address.child("street").value.toString(),
@@ -357,7 +357,7 @@ class MapActivity : AppCompatActivity(),
                                             longitude = address.child("longitude").value.toString(),
                                             neighborhood = address.child("neighborhood").value.toString(),
                                             fullAddress = address.child("fullAddress").value.toString()),
-                                    Model(  name = model.child("name").value.toString(),
+                                    Model(name = model.child("name").value.toString(),
                                             phone = model.child("phone").value.toString(),
                                             time_end = model.child("time_end").value.toString(),
                                             time_start = model.child("time_start").value.toString(),

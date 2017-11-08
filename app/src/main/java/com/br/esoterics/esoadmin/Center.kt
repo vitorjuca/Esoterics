@@ -8,7 +8,7 @@ import java.io.Serializable
 
 
 
-class Center : Serializable{
+class Center : Serializable {
     private var address: Address
     private var model: Model
     private var key: String = ""
@@ -36,6 +36,4 @@ class Center : Serializable{
     fun getModel(): Model {
         return this.model
     }
-
-
 }

@@ -1,12 +1,9 @@
 package com.br.esoterics.esoadmin
-
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.widget.EditText
 import android.widget.Toast
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationServices
@@ -15,11 +12,14 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.visualMode.activity_map.*
-import android.location.Geocoder
-import android.location.Location
-import com.br.esoterics.esoadmin.LocationPermissionManager
-import com.google.android.gms.maps.CameraUpdateFactory
+import com.br.esoterics.esoadmin.*
+import com.br.esoterics.esoadmin.R
+import com.br.esoterics.esoadmin.network.ApiClient
 import com.google.android.gms.maps.model.*
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
 
 
@@ -35,7 +35,7 @@ class MapActivity : AppCompatActivity(),
     private val locationPermissionManager = LocationPermissionManager()
     private var googleApiClient: GoogleApiClient? = null
     private val myDatabase: DatabaseReference = FirebaseDatabase.getInstance().getReference()
-    private val storageCenters = ArrayList<com.br.esoterics.esoadmin.Center>()
+    private val storageCenters = ArrayList<Center>()
     private var lastCenter = Center("", Address(), Model(), "")
     private lateinit var lastMarker: Marker
 
@@ -45,7 +45,7 @@ class MapActivity : AppCompatActivity(),
         setContentView(R.layout.activity_map)
         connectGoogleApiClient()
         log("VISUAL")
-
+        showEditBox(false)
 
         val mapFragment = map as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -53,9 +53,9 @@ class MapActivity : AppCompatActivity(),
 
     fun showEditBox(flag: Boolean){
         if(flag){
-            editBox.visibility = com.br.esoterics.esoadmin.VISIBLE
+            editBox.visibility = VISIBLE
         }else{
-            editBox.visibility = com.br.esoterics.esoadmin.GONE
+            editBox.visibility = GONE
         }
     }
 
@@ -69,7 +69,7 @@ class MapActivity : AppCompatActivity(),
 
 
 
-    fun loadEditBoxWithInfoFrom(center: com.br.esoterics.esoadmin.Center){
+    fun loadEditBoxWithInfoFrom(center: Center){
         centerType.setText(center.getModel().type)
         centerName.setText(center.getModel().name)
         centerPhone.setText(center.getModel().phone)
@@ -100,9 +100,9 @@ class MapActivity : AppCompatActivity(),
     override fun onMarkerClick(marker: Marker?): Boolean {
         if(marker != null){
             lastMarker = marker
-            var centerDAO: com.br.esoterics.esoadmin.Center? = null
+            var centerDAO: Center? = null
             var flag = false
-            for (center: com.br.esoterics.esoadmin.Center in storageCenters){
+            for (center: Center in storageCenters){
                 if(center.getKey().equals(marker.snippet)){
                     centerDAO = center
                     flag = true
@@ -130,8 +130,33 @@ class MapActivity : AppCompatActivity(),
 
     }
 
+    fun findRoute(origin: LatLng, destination: LatLng) {
+        val origin = "${origin.latitude},${origin.longitude}"
+        val destination = "${destination.latitude},${destination.longitude}"
+
+        val call = ApiClient.apiService().fetchRouteToTheCenter(origin, destination)
+        call.enqueue(object: Callback<String> {
+
+            override fun onFailure(call: Call<String>?, t: Throwable?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onResponse(call: Call<String>?, response: Response<String>?) {
+                val result = JSONObject(response.toString())
+                var routes = result.getJSONArray("routes")
+                var distance = routes.getJSONObject(0)
+                                        .getJSONArray("legs")
+                                        .getJSONObject(0)
+                                        .getJSONObject("distance")
+                                        .getInt("value")
+
+            }
+
+        })
+    }
+
     fun getAllLocations(){
-        val dbQuery = myDatabase.child(com.br.esoterics.esoadmin.CENTERS)
+        val dbQuery = myDatabase.child(CENTERS)
         dbQuery.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {}
             override fun onDataChange(dataSnapshot: DataSnapshot?) {
@@ -143,8 +168,8 @@ class MapActivity : AppCompatActivity(),
                             Log.d("DENTRO DO FOR", "Adicionando classes")
                             val key = center.key
                             Log.d("KEY",key)
-                            val address = center.child(com.br.esoterics.esoadmin.ADDRESS)
-                            val model = center.child(com.br.esoterics.esoadmin.MODEL)
+                            val address = center.child(ADDRESS)
+                            val model = center.child(MODEL)
                             val myCenter = Center(
                                     center.key,
                                     Address(street = address.child("street").value.toString(),
@@ -156,7 +181,7 @@ class MapActivity : AppCompatActivity(),
                                             longitude = address.child("longitude").value.toString(),
                                             neighborhood = address.child("neighborhood").value.toString(),
                                             fullAddress = address.child("fullAddress").value.toString()),
-                                    Model(  name = model.child("name").value.toString(),
+                                    Model(name = model.child("name").value.toString(),
                                             phone = model.child("phone").value.toString(),
                                             time_end = model.child("time_end").value.toString(),
                                             time_start = model.child("time_start").value.toString(),
@@ -168,7 +193,9 @@ class MapActivity : AppCompatActivity(),
                             val centerLatitude = myCenter.getAddress().latitude.toDouble()
                             val centerLongitude = myCenter.getAddress().longitude.toDouble()
                             val centerKey = myCenter.getKey()
-
+                            log("Key:" + centerKey)
+                            log("Latitude:" + centerLatitude.toString())
+                            log("Longitude:" + centerLongitude.toString())
                             val marker = MarkerOptions()
                             marker.position(LatLng(centerLatitude, centerLongitude))
                                     .title(model.child("name").value.toString())
