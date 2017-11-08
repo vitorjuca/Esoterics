@@ -1,5 +1,6 @@
 package com.br.esoterics.esoadmin
 import android.annotation.SuppressLint
+import android.location.Location
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
@@ -12,15 +13,13 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.visualMode.activity_map.*
-import com.br.esoterics.esoadmin.*
-import com.br.esoterics.esoadmin.R
 import com.br.esoterics.esoadmin.network.ApiClient
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
 
 
 class MapActivity : AppCompatActivity(),
@@ -37,8 +36,8 @@ class MapActivity : AppCompatActivity(),
     private val myDatabase: DatabaseReference = FirebaseDatabase.getInstance().getReference()
     private val storageCenters = ArrayList<Center>()
     private var lastCenter = Center("", Address(), Model(), "")
-    private lateinit var lastMarker: Marker
-
+    private var lastMarker: Marker? = null
+    private var myLastLocation: Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,9 +52,11 @@ class MapActivity : AppCompatActivity(),
 
     fun showEditBox(flag: Boolean){
         if(flag){
-            editBox.visibility = VISIBLE
+            if(editBox.visibility != VISIBLE)
+                editBox.visibility = VISIBLE
         }else{
-            editBox.visibility = GONE
+            if(editBox.visibility != GONE)
+                editBox.visibility = GONE
         }
     }
 
@@ -225,7 +226,21 @@ class MapActivity : AppCompatActivity(),
     }
 
     override fun onConnected(p0: Bundle?) {
+        try {
+            log("MYLASTLOCATION")
+            myLastLocation = LocationServices
+                    .FusedLocationApi
+                    .getLastLocation(googleApiClient)
+            log(myLastLocation!!.latitude.toString())
+            log(myLastLocation!!.longitude.toString())
+            if(myLastLocation != null){
+                log(myLastLocation!!.latitude.toString())
+                log(myLastLocation!!.longitude.toString())
+                googleMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(myLastLocation!!.latitude,
+                        myLastLocation!!.longitude),15F))
+            }
 
+        }catch (e: SecurityException){}
 
     }
 

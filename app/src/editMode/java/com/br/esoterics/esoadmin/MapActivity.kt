@@ -1,6 +1,8 @@
 package com.br.esoterics.esoadmin
 
 import android.annotation.SuppressLint
+import android.app.FragmentManager
+import android.app.ProgressDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
@@ -10,28 +12,30 @@ import android.widget.EditText
 import android.widget.Toast
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.*
 import android.location.Geocoder
+import android.location.Location
+import android.location.LocationListener
 import com.br.esoterics.esoadmin.*
 import com.br.esoterics.esoadmin.R
+import com.google.android.gms.maps.*
 import kotlinx.android.synthetic.editMode.activity_map.*
 import java.util.*
 
 
-class MapActivity : AppCompatActivity(),
+class MapActivity() : AppCompatActivity(),
         OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleMap.OnMapClickListener,
-        GoogleMap.OnMapLongClickListener {
+        GoogleMap.OnMapLongClickListener,
+        LocationListener{
+
 
     private var googleMap: GoogleMap? = null
     private val locationPermissionManager = LocationPermissionManager()
@@ -40,7 +44,13 @@ class MapActivity : AppCompatActivity(),
     private val storageCenters = ArrayList<Center>()
     private var lastCenter = Center("", Address(), Model(), "")
     private var lastCenterCheck: Boolean = false
-    private lateinit var lastMarker: Marker
+    private var lastMarker: Marker? = null
+    var fm = fragmentManager
+    var instance = MySpinnerDialog()
+    private var myLastLocation: Location? = null
+
+    private var myLastLat: Double = 0.0
+    private var myLastLng: Double = 0.0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,43 +68,51 @@ class MapActivity : AppCompatActivity(),
         addMarkerButton.setOnClickListener{
             if(googleMap != null){
 
-
                 val myRef = myDatabase.push()
                 val key = myRef.key
                 val location = googleMap!!.cameraPosition.target
-                val marker = MarkerOptions().position(location)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_icon))
-                        .snippet(key)
+                if(validateCoordinates(location.latitude,location.longitude)){
+                    instance.show(fm, "tag")
+                    val marker = MarkerOptions().position(location)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_icon))
+                            .snippet(key)
 
-                val geocoder = Geocoder(this, Locale.getDefault())
-                var addresses: List<android.location.Address>
+                    val geocoder = Geocoder(this, Locale.getDefault())
+                    var addresses: List<android.location.Address>
 
-                try {
+                    try {
 
-                    addresses = geocoder.getFromLocation(location.latitude, location.longitude,1)
-                    log(addresses.get(0).locality)
-                    log(addresses.get(0).toString())
-                    log(addresses.get(0).subLocality)
-                    log(addresses.get(0).getAddressLine(0))
-                    centerAddress.setText(addresses.get(0).thoroughfare
-                                                            .plus(", ")
-                                                            .plus(addresses.get(0).featureName.toString()))
 
-                }catch (e: Exception){
+                        addresses = geocoder.getFromLocation(location.latitude, location.longitude,1)
+                        log(addresses.get(0).locality)
+                        log(addresses.get(0).toString())
+                        log(addresses.get(0).subLocality)
+                        log(addresses.get(0).getAddressLine(0))
+                        centerAddress.setText(addresses.get(0).thoroughfare
+                                                                .plus(", ")
+                                                                .plus(addresses.get(0).featureName.toString()))
+                        instance.dismiss()
 
+                    }catch (e: Exception){
+
+                    }
+
+                    val center = Center(key,
+                            Address(latitude = location.latitude.toString(),
+                                    longitude = location.longitude.toString()),
+                            Model(), "1")
+                    storageCenters.add(center)
+                    lastCenter = center
+                    googleMap!!.addMarker(marker)
+                    makeSwitchChecked(true)
+                    makeEditBoxEditable(true)
+                    showEditBox(true)
+                    instance.dismiss()
+                }else{
+                    sendToast("Erro ao pegar coordenadas, tente novamente")
                 }
-
-                val center = Center(key,
-                        Address(latitude = location.latitude.toString(),
-                                longitude = location.longitude.toString()),
-                        Model(), "1")
-                storageCenters.add(center)
-                lastCenter = center
-                googleMap!!.addMarker(marker)
             }
-            makeSwitchChecked(true)
-            makeEditBoxEditable(true)
-            showEditBox(true)
+
         }
 
         switchButton.setOnClickListener {
@@ -125,7 +143,7 @@ class MapActivity : AppCompatActivity(),
         removeButton.setOnClickListener {
             if(lastCenter.getKey() != ""){
                 removeCenterFromDatabase(lastCenter)
-                lastMarker.remove()
+                lastMarker!!.remove()
                 showEditBox(false)
                 showMenuBox(true)
             }else{
@@ -136,6 +154,13 @@ class MapActivity : AppCompatActivity(),
 
         val mapFragment = map as SupportMapFragment
         mapFragment.getMapAsync(this)
+    }
+
+    fun getProgressDialog(): ProgressDialog{
+        var progressDialog = ProgressDialog(this)
+        progressDialog.setMessage("Aguarde...")
+        progressDialog.setCancelable(false)
+        return progressDialog
     }
 
     fun validateEditBox(): Boolean{
@@ -157,6 +182,10 @@ class MapActivity : AppCompatActivity(),
             flag = false
         }
         return flag
+    }
+
+    fun validateCoordinates(latitude: Double, longitude: Double) :Boolean{
+        return true
     }
 
 
@@ -276,17 +305,19 @@ class MapActivity : AppCompatActivity(),
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(p0: GoogleMap?) {
-
         googleMap = p0
 
         if (googleMap != null) {
             googleMap!!.setOnMarkerClickListener(this)
             googleMap!!.setOnMapClickListener(this)
             googleMap!!.setOnMapLongClickListener(this)
+            instance.show(fm, "tags")
             if(locationPermissionManager.isPermissionGranted(this)){
                 googleMap!!.setMyLocationEnabled(true)
                 googleMap!!.getUiSettings().setMyLocationButtonEnabled(true)
                 getAllLocations()
+
+
             }else{
                 locationPermissionManager.requestPermissions(this)
             }
@@ -322,9 +353,12 @@ class MapActivity : AppCompatActivity(),
     override fun onMapClick(location: LatLng?) {
         addButtonMenu.collapse()
         showMenuBox(true)
-        if(lastMarker.snippet.isNullOrBlank()){
-            lastMarker.remove()
+        if(lastMarker != null){
+            if(lastMarker!!.snippet.isNullOrBlank()){
+                lastMarker!!.remove()
+            }
         }
+
     }
 
     override fun onMapLongClick(location: LatLng?) {
@@ -377,9 +411,9 @@ class MapActivity : AppCompatActivity(),
                                     .flat(true)
                                     .snippet(centerKey)
 
-
                             googleMap!!.addMarker(marker)
                         }
+                        instance.dismiss()
                         Log.d("HIDE PROGRESS BAR", "HIDE")
                         //hideProgressBar()
                     }
@@ -393,17 +427,43 @@ class MapActivity : AppCompatActivity(),
                 .addConnectionCallbacks(this)
                 .addApi(LocationServices.API)//Be aware of state of the connection
                 .build()
+//        instance.show(fm,"tag")
         //Tentando conexão com o Google API. Se a tentativa for bem sucessidade, o método
         // onConnected() será chamado, senão, o método onConnectionFailed() será chamado.
         googleApiClient!!.connect()
     }
 
-    override fun onConnected(p0: Bundle?) {}
+    override fun onConnected(p0: Bundle?) {
+        try {
+            log("MYLASTLOCATION")
+            myLastLocation = LocationServices
+                                .FusedLocationApi
+                                .getLastLocation(googleApiClient)
+            log(myLastLocation!!.latitude.toString())
+            log(myLastLocation!!.longitude.toString())
+            if(myLastLocation != null){
+                log(myLastLocation!!.latitude.toString())
+                log(myLastLocation!!.longitude.toString())
+                googleMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(myLastLocation!!.latitude,
+                        myLastLocation!!.longitude),15F))
+            }
 
+        }catch (e: SecurityException){}
+    }
     override fun onConnectionSuspended(p0: Int) {}
 
     fun log(string: String){
         Log.d("DEBUGGER", string)
     }
+
+    override fun onLocationChanged(location: Location?) {
+
+    }
+
+    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {}
+
+    override fun onProviderEnabled(p0: String?) {}
+
+    override fun onProviderDisabled(p0: String?) {}
 
 }
