@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.br.esoterics.esoadmin.visualmode.MapActivity">
+    tools:context="com.br.esoterics.esoadmin.MapActivity">
 
 
     <FrameLayout
@@ -33,7 +33,6 @@
                 android:background="@drawable/box_shadow"
                 android:padding="10dp"
                 android:visibility="visible">
-
                 <Switch
                     android:id="@+id/switchButton"
                     android:layout_width="wrap_content"
@@ -43,19 +42,34 @@
                     android:textColor="@color/colorLightBlue"
                     android:checked="false"
                     android:text="Editar " />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
                 <Spinner
                     android:id="@+id/centerType"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:entries="@array/tipos_arrays"
                     android:prompt="@string/tipos_prompt"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="10dp"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginLeft="30dp"
+
                     android:layout_marginRight="30dp"
                     android:layout_marginEnd="30dp"
-                    android:padding="10dp"/>
+                    android:padding="10dp"
+                    android:layout_weight="0.9"/>
+
+                <ImageView
+                    android:id="@+id/centerTypeImg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/ic_launcher_mandala"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="5dp"/>
+
+                </LinearLayout>
                 <EditText
                     android:id="@+id/centerName"
                     android:layout_width="match_parent"

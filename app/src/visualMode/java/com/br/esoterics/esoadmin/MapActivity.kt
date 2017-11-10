@@ -33,7 +33,8 @@ class MapActivity : AppCompatActivity(),
     private var googleMap: GoogleMap? = null
     private val locationPermissionManager = LocationPermissionManager()
     private var googleApiClient: GoogleApiClient? = null
-    private val myDatabase: DatabaseReference = FirebaseDatabase.getInstance().getReference()
+    private val myDatabase: DatabaseReference = FirebaseDatabase.getInstance()
+                                                                .getReference()
     private val storageCenters = ArrayList<Center>()
     private var lastCenter = Center("", Address(), Model(), "")
     private var lastMarker: Marker? = null
@@ -77,6 +78,7 @@ class MapActivity : AppCompatActivity(),
         centerAddress.setText(center.getAddress().fullAddress)
         centerStartTime.setText(center.getModel().time_start)
         centerEndTime.setText(center.getModel().time_end)
+        centerTypeImg.background = getDrawable(getCenterMipmap(center))
     }
 
     @SuppressLint("MissingPermission")
@@ -139,7 +141,8 @@ class MapActivity : AppCompatActivity(),
         call.enqueue(object: Callback<String> {
 
             override fun onFailure(call: Call<String>?, t: Throwable?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                TODO("not implemented") //To change body of created functions
+                // use File | Settings | File Templates.
             }
 
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
@@ -173,20 +176,34 @@ class MapActivity : AppCompatActivity(),
                             val model = center.child(MODEL)
                             val myCenter = Center(
                                     center.key,
-                                    Address(street = address.child("street").value.toString(),
-                                            number = address.child("number").value.toString(),
-                                            city = address.child("city").value.toString(),
-                                            state = address.child("state").value.toString(),
-                                            country = address.child("country").value.toString(),
-                                            latitude = address.child("latitude").value.toString(),
-                                            longitude = address.child("longitude").value.toString(),
-                                            neighborhood = address.child("neighborhood").value.toString(),
-                                            fullAddress = address.child("fullAddress").value.toString()),
-                                    Model(name = model.child("name").value.toString(),
-                                            phone = model.child("phone").value.toString(),
-                                            time_end = model.child("time_end").value.toString(),
-                                            time_start = model.child("time_start").value.toString(),
-                                            type = model.child("type").value.toString()),
+                                    Address(street = address.child("street")
+                                                    .value.toString(),
+                                            number = address.child("number")
+                                                    .value.toString(),
+                                            city = address.child("city")
+                                                    .value.toString(),
+                                            state = address.child("state")
+                                                    .value.toString(),
+                                            country = address.child("country")
+                                                    .value.toString(),
+                                            latitude = address.child("latitude")
+                                                    .value.toString(),
+                                            longitude = address.child("longitude")
+                                                    .value.toString(),
+                                            neighborhood = address.child("neighborhood")
+                                                    .value.toString(),
+                                            fullAddress = address.child("fullAddress")
+                                                    .value.toString()),
+                                    Model(name = model.child("name")
+                                                .value.toString(),
+                                            phone = model.child("phone")
+                                                    .value.toString(),
+                                            time_end = model.child("time_end")
+                                                    .value.toString(),
+                                            time_start = model.child("time_start")
+                                                    .value.toString(),
+                                            type = model.child("type")
+                                                    .value.toString()),
                                     ""
                             )
                             storageCenters.add(myCenter)
@@ -200,7 +217,8 @@ class MapActivity : AppCompatActivity(),
                             val marker = MarkerOptions()
                             marker.position(LatLng(centerLatitude, centerLongitude))
                                     .title(model.child("name").value.toString())
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_icon))
+                                    .icon(BitmapDescriptorFactory
+                                            .fromResource(getCenterMipmap(myCenter)))
                                     .flat(true)
                                     .snippet(centerKey)
 
@@ -236,7 +254,8 @@ class MapActivity : AppCompatActivity(),
             if(myLastLocation != null){
                 log(myLastLocation!!.latitude.toString())
                 log(myLastLocation!!.longitude.toString())
-                googleMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(myLastLocation!!.latitude,
+                googleMap!!.moveCamera(CameraUpdateFactory
+                                .newLatLngZoom(LatLng(myLastLocation!!.latitude,
                         myLastLocation!!.longitude),15F))
             }
 
@@ -248,6 +267,21 @@ class MapActivity : AppCompatActivity(),
 
     fun log(string: String){
         Log.d("DEBUGGER", string)
+    }
+
+    fun getCenterMipmap(center: Center): Int{
+        var centerType = center.getModel().type
+        if(centerType.equals("Umbanda")){
+            return R.mipmap.umbanda
+        }else if(centerType.equals("Candomblé")){
+            return R.mipmap.candomble
+        }else if(centerType.equals("Xamanico")){
+            return R.mipmap.xamanico
+        }else if(centerType.equals("Esotericos")){
+            return R.mipmap.esotericos
+        }else{
+            return R.mipmap.outros
+        }
     }
 
 }

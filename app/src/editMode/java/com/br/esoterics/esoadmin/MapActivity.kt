@@ -20,6 +20,8 @@ import com.google.firebase.database.*
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationListener
+import android.view.View
+import android.widget.AdapterView
 import com.br.esoterics.esoadmin.*
 import com.br.esoterics.esoadmin.R
 import com.google.android.gms.maps.*
@@ -103,7 +105,7 @@ class MapActivity() : AppCompatActivity(),
                             Model(), "1")
                     storageCenters.add(center)
                     lastCenter = center
-                    googleMap!!.addMarker(marker)
+                    lastMarker = googleMap!!.addMarker(marker)
                     makeSwitchChecked(true)
                     makeEditBoxEditable(true)
                     showEditBox(true)
@@ -113,6 +115,17 @@ class MapActivity() : AppCompatActivity(),
                 }
             }
 
+        }
+
+        centerType.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
+
+            override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, arg3: Long) {
+                var type = parent!!.getItemAtPosition(position).toString()
+                log(type)
+                centerTypeImg.background = getDrawable(getMipmapFromString(type))
+            }
         }
 
         switchButton.setOnClickListener {
@@ -133,6 +146,8 @@ class MapActivity() : AppCompatActivity(),
                 center.getModel().time_start = centerStartTime.selectedItem.toString()
                 center.getModel().time_end = centerEndTime.selectedItem.toString()
                 center.getAddress().fullAddress = centerAddress.text.toString()
+                if(lastMarker != null)
+                    lastMarker!!.setIcon(BitmapDescriptorFactory.fromResource(getCenterMipmap(center)))
                 persistCenterOnDatabase(center)
                 clearEditTexts()
                 showEditBox(false)
@@ -407,11 +422,12 @@ class MapActivity() : AppCompatActivity(),
                             val marker = MarkerOptions()
                             marker.position(LatLng(centerLatitude, centerLongitude))
                                     .title(model.child("name").value.toString())
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_icon))
+                                    .icon(BitmapDescriptorFactory.fromResource(getCenterMipmap(myCenter)))
                                     .flat(true)
                                     .snippet(centerKey)
 
-                            googleMap!!.addMarker(marker)
+                            lastMarker = googleMap!!.addMarker(marker)
+
                         }
                         instance.dismiss()
                         Log.d("HIDE PROGRESS BAR", "HIDE")
@@ -465,5 +481,35 @@ class MapActivity() : AppCompatActivity(),
     override fun onProviderEnabled(p0: String?) {}
 
     override fun onProviderDisabled(p0: String?) {}
+
+    fun getCenterMipmap(center: Center): Int{
+        var centerType = center.getModel().type
+        if(centerType.equals("Umbanda")){
+            return R.mipmap.umbanda
+        }else if(centerType.equals("Candomblé")){
+            return R.mipmap.candomble
+        }else if(centerType.equals("Xamanico")){
+            return R.mipmap.xamanico
+        }else if(centerType.equals("Esotericos")){
+            return R.mipmap.esotericos
+        }else{
+            return R.mipmap.outros
+        }
+    }
+
+    fun getMipmapFromString(string: String): Int{
+        var centerType = string
+        if(centerType.equals("Umbanda")){
+            return R.mipmap.umbanda
+        }else if(centerType.equals("Candomblé")){
+            return R.mipmap.candomble
+        }else if(centerType.equals("Xamanico")){
+            return R.mipmap.xamanico
+        }else if(centerType.equals("Esotericos")){
+            return R.mipmap.esotericos
+        }else{
+            return R.mipmap.outros
+        }
+    }
 
 }
