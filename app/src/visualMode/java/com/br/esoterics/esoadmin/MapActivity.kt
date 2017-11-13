@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
 import android.widget.Toast
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationServices
@@ -36,16 +38,32 @@ class MapActivity : AppCompatActivity(),
     private val myDatabase: DatabaseReference = FirebaseDatabase.getInstance()
                                                                 .getReference()
     private val storageCenters = ArrayList<Center>()
+    private val storageMarkers = ArrayList<Marker>()
+    private val storageMarkersOptionsManager = ArrayList<MarkerOptions>()
     private var lastCenter = Center("", Address(), Model(), "")
     private var lastMarker: Marker? = null
     private var myLastLocation: Location? = null
 
+    var fm = fragmentManager
+    var spinnerDialog = MySpinnerDialog()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
+        spinnerDialog.show(fm, "tag")
         connectGoogleApiClient()
         log("VISUAL")
         showEditBox(false)
+
+        centerTypeFilter.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
+
+            override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, arg3: Long) {
+                var type = parent!!.getItemAtPosition(position).toString()
+                filterGoogleMapsBy(type)
+            }
+        }
 
         val mapFragment = map as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -61,7 +79,63 @@ class MapActivity : AppCompatActivity(),
         }
     }
 
+    fun filterGoogleMapsBy(string: String){
+        spinnerDialog.show(fm, "tag")
 
+        googleMap!!.clear()
+        if (string.equals("Umbanda")) {
+            for (marker: MarkerOptions in storageMarkersOptionsManager) {
+                storageCenters.forEach { center ->
+                    if (center.getKey().equals(marker.snippet)
+                            && center.getModel().type.equals(string)) {
+                        googleMap!!.addMarker(marker)
+                    }
+                }
+            }
+        }else if (string.equals("Candomblé")) {
+            for (marker: MarkerOptions in storageMarkersOptionsManager) {
+                storageCenters.forEach { center ->
+                    if (center.getKey().equals(marker.snippet)
+                            && center.getModel().type.equals(string)) {
+                        googleMap!!.addMarker(marker)
+                    }
+                }
+            }
+        }else if (string.equals("Xamanico")) {
+            for (marker: MarkerOptions in storageMarkersOptionsManager) {
+                storageCenters.forEach { center ->
+                    if (center.getKey().equals(marker.snippet)
+                            && center.getModel().type.equals(string)) {
+                        googleMap!!.addMarker(marker)
+                    }
+                }
+            }
+        }else if (string.equals("Esotericos")) {
+            for (marker: MarkerOptions in storageMarkersOptionsManager) {
+                storageCenters.forEach { center ->
+                    if (center.getKey().equals(marker.snippet)
+                            && center.getModel().type.equals(string)) {
+                        googleMap!!.addMarker(marker)
+                    }
+                }
+            }
+        }else if (string.equals("Outro")) {
+            for (marker: MarkerOptions in storageMarkersOptionsManager) {
+                storageCenters.forEach { center ->
+                    if (center.getKey().equals(marker.snippet)
+                            && center.getModel().type.equals(string)) {
+                        googleMap!!.addMarker(marker)
+                    }
+                }
+            }
+        }else if (string.equals("Todos")) {
+            for (marker: MarkerOptions in storageMarkersOptionsManager) {
+                googleMap!!.addMarker(marker)
+
+            }
+        }
+        spinnerDialog.dismiss()
+    }
 
 
     fun sendToast(data: String){
@@ -78,7 +152,7 @@ class MapActivity : AppCompatActivity(),
         centerAddress.setText(center.getAddress().fullAddress)
         centerStartTime.setText(center.getModel().time_start)
         centerEndTime.setText(center.getModel().time_end)
-        centerTypeImg.background = getDrawable(getCenterMipmap(center))
+        centerTypeImg.background = getDrawable(getCenterDrawable(center))
     }
 
     @SuppressLint("MissingPermission")
@@ -94,6 +168,7 @@ class MapActivity : AppCompatActivity(),
                 googleMap!!.setMyLocationEnabled(true)
                 googleMap!!.getUiSettings().setMyLocationButtonEnabled(true)
                 getAllLocations()
+                spinnerDialog.dismiss()
             }else{
                 locationPermissionManager.requestPermissions(this)
             }
@@ -101,6 +176,7 @@ class MapActivity : AppCompatActivity(),
     }
 
     override fun onMarkerClick(marker: Marker?): Boolean {
+        spinnerDialog.show(fm, "tag")
         if(marker != null){
             lastMarker = marker
             var centerDAO: Center? = null
@@ -120,6 +196,7 @@ class MapActivity : AppCompatActivity(),
             lastCenter.setKey(marker.snippet)
         }
         showEditBox(true)
+        spinnerDialog.dismiss()
         return true
     }
 
@@ -218,13 +295,14 @@ class MapActivity : AppCompatActivity(),
                             marker.position(LatLng(centerLatitude, centerLongitude))
                                     .title(model.child("name").value.toString())
                                     .icon(BitmapDescriptorFactory
-                                            .fromResource(getCenterMipmap(myCenter)))
+                                            .fromResource(getCenterDrawable(myCenter)))
                                     .flat(true)
                                     .snippet(centerKey)
-
-
-                            googleMap!!.addMarker(marker)
+                            val markerMap = googleMap!!.addMarker(marker)
+                            storageMarkers.add(markerMap)
+                            storageMarkersOptionsManager.add(marker)
                         }
+
                         Log.d("HIDE PROGRESS BAR", "HIDE")
                         //hideProgressBar()
                     }
@@ -269,18 +347,18 @@ class MapActivity : AppCompatActivity(),
         Log.d("DEBUGGER", string)
     }
 
-    fun getCenterMipmap(center: Center): Int{
+    fun getCenterDrawable(center: Center): Int{
         var centerType = center.getModel().type
         if(centerType.equals("Umbanda")){
-            return R.mipmap.umbanda
+            return R.drawable.umbanda
         }else if(centerType.equals("Candomblé")){
-            return R.mipmap.candomble
+            return R.drawable.candomble
         }else if(centerType.equals("Xamanico")){
-            return R.mipmap.xamanico
+            return R.drawable.xamanico
         }else if(centerType.equals("Esotericos")){
-            return R.mipmap.esotericos
+            return R.drawable.esotericos
         }else{
-            return R.mipmap.outros
+            return R.drawable.outros
         }
     }
 

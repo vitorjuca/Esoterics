@@ -35,4 +35,12 @@
         <item>23:00</item>
         <item>00:00</item>
     </string-array>
+    <string-array name="tipos_arrays_filtro">
+        <item>Todos</item>
+        <item>Umbanda</item>
+        <item>Candomblé</item>
+        <item>Xamanico</item>
+        <item>Esotericos</item>
+        <item>Outro</item>
+    </string-array>
 </resources>
