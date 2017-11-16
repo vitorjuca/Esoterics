@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.AdapterView
 import android.widget.Toast
 import com.google.android.gms.common.api.GoogleApiClient
@@ -73,11 +74,17 @@ class MapActivity : AppCompatActivity(),
 
     fun showEditBox(flag: Boolean){
         if(flag){
-            if(editBox.visibility != VISIBLE)
+            if(editBox.visibility != VISIBLE){
+                editBox.startAnimation(AnimationUtils.loadAnimation(this, R.anim.abc_fade_in))
                 editBox.visibility = VISIBLE
+            }
+
         }else{
-            if(editBox.visibility != GONE)
+            if(editBox.visibility != GONE){
+                editBox.startAnimation(AnimationUtils.loadAnimation(this, R.anim.abc_fade_out))
                 editBox.visibility = GONE
+            }
+
         }
     }
 
@@ -202,6 +209,13 @@ class MapActivity : AppCompatActivity(),
         return true
     }
 
+    override fun onBackPressed() {
+        if(editBox.visibility == VISIBLE){
+            showEditBox(false)
+        }else{
+            super.onBackPressed()
+        }
+    }
 
 
     override fun onMapClick(location: LatLng?) {

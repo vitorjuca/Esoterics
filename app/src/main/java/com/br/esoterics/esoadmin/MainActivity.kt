@@ -15,8 +15,8 @@ class MainActivity : AppCompatActivity() {
         var intent = Intent(this, MapActivity::class.java)
         startActivity(intent)
         startButton.setOnClickListener {
-            var intent = Intent(this, MapActivity::class.java)
-            startActivity(intent)
+            var intent2 = Intent(this, MapActivity::class.java)
+            startActivity(intent2)
         }
 
     }

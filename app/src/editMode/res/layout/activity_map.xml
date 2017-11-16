@@ -21,8 +21,7 @@
 
         <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:id="@+id/editBox"
@@ -32,7 +31,8 @@
                 android:orientation="vertical"
                 android:background="@drawable/box_shadow"
                 android:padding="10dp"
-                android:visibility="visible">
+                android:visibility="visible"
+                android:clickable="true">
                 <Switch
                     android:id="@+id/switchButton"
                     android:layout_width="wrap_content"
@@ -45,85 +45,129 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tipo do local"
+                        android:textColor="@color/lightgray"
+                        android:gravity="center"
+                        android:layout_gravity="center"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <Spinner
+                            android:id="@+id/centerType"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:entries="@array/tipos_arrays"
+                            android:prompt="@string/tipos_prompt"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="10dp"
 
-                <Spinner
-                    android:id="@+id/centerType"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:entries="@array/tipos_arrays"
-                    android:prompt="@string/tipos_prompt"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="10dp"
+                            android:layout_marginRight="30dp"
+                            android:layout_marginEnd="30dp"
+                            android:padding="10dp"
+                            android:layout_weight="0.9"/>
 
-                    android:layout_marginRight="30dp"
-                    android:layout_marginEnd="30dp"
-                    android:padding="10dp"
-                    android:layout_weight="0.9"/>
+                        <ImageView
+                            android:id="@+id/centerTypeImg"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/umbanda"
+                            android:layout_gravity="center"
+                            android:layout_marginEnd="5dp"/>
+                    </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/centerTypeImg"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@mipmap/ic_launcher_mandala"
-                    android:layout_gravity="center"
-                    android:layout_marginEnd="5dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nome do local"
+                        android:textColor="@color/lightgray"
+                        android:gravity="center"
+                        android:layout_gravity="center"/>
+                    <EditText
+                        android:id="@+id/centerName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:hint="Digite o nome"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Telefone"
+                        android:textColor="@color/lightgray"
+                        android:gravity="center"
+                        android:layout_gravity="center"/>
+                    <EditText
+                        android:id="@+id/centerPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:hint="Digite seu número"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Endereço"
+                        android:textColor="@color/lightgray"
+                        android:gravity="center"
+                        android:layout_gravity="center"/>
+                    <EditText
+                        android:id="@+id/centerAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
 
+                        android:hint="Digite o endereço"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Horário de funcionamento"
+                        android:textColor="@color/lightgray"
+                        android:gravity="center"
+                        android:layout_gravity="center"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="10dp">
+                        <Spinner
+                            android:id="@+id/centerStartTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:entries="@array/horarios_arrays"
+                            android:prompt="@string/horarios_prompt"
+                            android:layout_weight="0.4"
+                            android:padding="10dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Até as"
+                            android:textColor="@color/lightgray"
+                            android:gravity="center"
+                            android:layout_gravity="center"
+                            android:layout_weight="0.2"/>
+                        <Spinner
+                            android:id="@+id/centerEndTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:entries="@array/horarios_arrays"
+                            android:prompt="@string/horarios_prompt"
+                            android:layout_weight="0.4"
+                            android:padding="10dp" />
+                    </LinearLayout>
                 </LinearLayout>
-                <EditText
-                    android:id="@+id/centerName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Nome do estabelecimento"
-                    android:textSize="18dp"
-                    android:backgroundTint="@color/colorPrimary"/>
-                <EditText
-                    android:id="@+id/centerPhone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="phone"
-                    android:hint="Telefone"
-                    android:backgroundTint="@color/colorPrimary"/>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
-                    <TextView
-                        android:id="@+id/txtStart"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Abre:"/>
 
-                    <Spinner
-                        android:id="@+id/centerStartTime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:entries="@array/horarios_arrays"
-                        android:prompt="@string/horarios_prompt"
-                        android:layout_weight="0.5"
-                        android:padding="10dp"/>
-                    <TextView
-                        android:id="@+id/txtEnd"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Fecha:"/>
-                    <Spinner
-                        android:id="@+id/centerEndTime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:entries="@array/horarios_arrays"
-                        android:prompt="@string/horarios_prompt"
-                        android:layout_weight="0.5"
-                        android:padding="10dp"/>
+
+
                 </LinearLayout>
 
-                <EditText
-                    android:id="@+id/centerAddress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Endereço"
-                    android:backgroundTint="@color/colorPrimary"
-                    android:enabled="false"/>
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"

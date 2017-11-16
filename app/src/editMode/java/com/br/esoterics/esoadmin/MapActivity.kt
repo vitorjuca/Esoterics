@@ -21,7 +21,9 @@ import android.location.Geocoder
 import android.location.Location
 import android.location.LocationListener
 import android.view.View
+import android.view.animation.*
 import android.widget.AdapterView
+import android.widget.Spinner
 import com.br.esoterics.esoadmin.*
 import com.br.esoterics.esoadmin.R
 import com.google.android.gms.maps.*
@@ -51,8 +53,6 @@ class MapActivity() : AppCompatActivity(),
     var instance = MySpinnerDialog()
     private var myLastLocation: Location? = null
 
-    private var myLastLat: Double = 0.0
-    private var myLastLng: Double = 0.0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -171,6 +171,15 @@ class MapActivity() : AppCompatActivity(),
         mapFragment.getMapAsync(this)
     }
 
+    override fun onBackPressed() {
+        if(editBox.visibility == VISIBLE){
+            showEditBox(false)
+            showMenuBox(true)
+        }else{
+            super.onBackPressed()
+        }
+    }
+
     fun getProgressDialog(): ProgressDialog{
         var progressDialog = ProgressDialog(this)
         progressDialog.setMessage("Aguarde...")
@@ -206,13 +215,19 @@ class MapActivity() : AppCompatActivity(),
 
     fun showEditBox(flag: Boolean){
         if(flag){
-            editBox.visibility = VISIBLE
-            showMarkerBox(false)
-            showMenuBox(false)
+            if(editBox.visibility == GONE){
+                editBox.startAnimation(AnimationUtils.loadAnimation(this, R.anim.abc_fade_in))
+                editBox.visibility = VISIBLE
+                showMarkerBox(false)
+                showMenuBox(false)
+            }
         }else{
-            editBox.visibility = GONE
-            clearEditTexts()
-            makeSwitchChecked(false)
+            if(editBox.visibility == VISIBLE){
+                editBox.startAnimation(AnimationUtils.loadAnimation(this,R.anim.abc_fade_out))
+                editBox.visibility = GONE
+                clearEditTexts()
+                makeSwitchChecked(false)
+            }
         }
     }
 
@@ -270,8 +285,6 @@ class MapActivity() : AppCompatActivity(),
             centerType.isEnabled = true
             centerStartTime.isEnabled = true
             centerEndTime.isEnabled = true
-            txtStart.setTextColor(Color.DKGRAY)
-            txtEnd.setTextColor(Color.DKGRAY)
             enableEditText(centerName)
             enableEditText(centerPhone)
             enableEditText(centerAddress)
@@ -286,8 +299,6 @@ class MapActivity() : AppCompatActivity(),
             centerType.isEnabled = false
             centerStartTime.isEnabled = false
             centerEndTime.isEnabled = false
-            txtStart.setTextColor(Color.LTGRAY)
-            txtEnd.setTextColor(Color.LTGRAY)
             disableEditText(centerName)
             disableEditText(centerPhone)
             disableEditText(centerAddress)
@@ -296,12 +307,10 @@ class MapActivity() : AppCompatActivity(),
 
     fun disableEditText(editText: EditText) {
         editText.setEnabled(false);
-//        editText.setInputType(InputType.TYPE_NULL);
     }
 
     fun enableEditText(editText: EditText){
         editText.setEnabled(true);
-//        editText.setInputType(InputType.TYPE_CLASS_TEXT);
     }
 
     fun persistCenterOnDatabase(center: Center){
@@ -313,9 +322,23 @@ class MapActivity() : AppCompatActivity(),
     }
 
     fun loadEditBoxWithInfoFrom(center: Center){
+        centerType.setSelection(getSpinnerId(centerType,center.getModel().type))
         centerName.setText(center.getModel().name)
         centerPhone.setText(center.getModel().phone)
         centerAddress.setText(center.getAddress().fullAddress)
+        centerStartTime.setSelection(getSpinnerId(centerStartTime,center.getModel().time_start))
+        centerEndTime.setSelection(getSpinnerId(centerEndTime,center.getModel().time_end))
+    }
+
+    fun getSpinnerId(spinner: Spinner,string: String): Int{
+        for (index in 0 .. spinner.adapter.count) {
+            if(spinner.getItemAtPosition(index).toString().equals(string)){
+                log(spinner.getItemAtPosition(index).toString())
+                log(index.toString())
+               return index
+            }
+        }
+        return 0
     }
 
     @SuppressLint("MissingPermission")
