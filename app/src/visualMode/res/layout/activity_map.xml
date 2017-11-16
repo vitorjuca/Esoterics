@@ -1,9 +1,13 @@
+
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.br.esoterics.esoadmin.MapActivity">
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,19 +18,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
-            android:background="@color/colorWhite">
+            style="@style/search_box"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_search_black"/>
             <Spinner
                 android:id="@+id/centerTypeFilter"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:entries="@array/tipos_arrays_filtro"
-                android:padding="10dp"/>
+                android:padding="5dp"
+                android:textAlignment="center"/>
         </LinearLayout>
+
 
         <FrameLayout
             android:id="@+id/frame_general"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
 
 
             <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -57,90 +70,172 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="5dp">
+                        android:padding="5dp"
+                        android:clickable="true">
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-                            <EditText
-                                android:id="@+id/centerType"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:hint="Tipo do Estabelecimento"
-                                android:textSize="20dp"
-                                android:layout_weight="0.9"
-                                android:enabled="false"/>
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="5dp">
                             <ImageView
                                 android:id="@+id/centerTypeImg"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:background="@mipmap/ic_launcher_mandala"
+                                android:background="@drawable/umbanda"
                                 android:layout_gravity="center"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Local"
+                                android:textColor="@color/lightgray"
+                                android:gravity="center"
+                                android:layout_gravity="center"/>
+                            <TextView
+                                android:id="@+id/centerName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/darkgray"
+                                android:textSize="24dp"
+                                android:textStyle="bold"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:textAlignment="center"
+                                android:maxLength="25"
+                                android:text="Nome do estabelecimento"/>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:padding="5dp">
 
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:layout_weight="0.5">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Tipo"
+                                        android:textColor="@color/lightgray"
+                                        android:gravity="center"
+                                        android:layout_gravity="center"/>
+                                    <TextView
+                                        android:id="@+id/centerType"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/darkgray"
+                                        android:textSize="20dp"
+                                        android:textStyle="bold"
+                                        android:layout_gravity="center"
+                                        android:gravity="center"
+                                        android:text="Tipo do centro"/>
+                                </LinearLayout>
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:layout_weight="0.5">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Telefone"
+                                        android:textColor="@color/lightgray"
+                                        android:gravity="center"
+                                        android:layout_gravity="center"/>
+                                    <TextView
+                                        android:id="@+id/centerPhone"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/darkgray"
+                                        android:textSize="20dp"
+                                        android:textStyle="bold"
+                                        android:layout_gravity="center"
+                                        android:gravity="center"
+                                        android:text="Telefone"/>
+                                </LinearLayout>
+                            </LinearLayout>
                         </LinearLayout>
-
-
-                        <EditText
-                            android:id="@+id/centerName"
+                        <View
+                            android:layout_height="1dp"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Nome do local"
-                            android:textSize="20dp"
-                            android:enabled="false"/>
-                        <EditText
-                            android:id="@+id/centerPhone"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Telefone"
-                            android:textSize="20dp"
-                            android:enabled="false"/>
-                        <EditText
-                            android:id="@+id/centerAddress"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Endereço"
-                            android:textSize="20dp"
-                            android:enabled="false"/>
+                            android:background="@color/lightgray"
+                            android:layout_margin="10dp"/>
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
+                            android:orientation="vertical"
                             android:padding="5dp">
-
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Abre:"
-                                android:padding="10dp"/>
+                                android:text="Endereço"
+                                android:textColor="@color/lightgray"
+                                android:gravity="center"
+                                android:layout_gravity="center"/>
                             <TextView
-                                android:id="@+id/centerStartTime"
-                                android:layout_width="wrap_content"
+                                android:id="@+id/centerAddress"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="00:00"
-                                android:layout_weight="0.9"
+                                android:textColor="@color/darkgray"
                                 android:textSize="20dp"
-                                android:textAlignment="textEnd"
-                                android:padding="5dp"/>
+                                android:textStyle="bold"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:text="Endereço do local"/>
                         </LinearLayout>
+                        <View
+                            android:layout_height="1dp"
+                            android:layout_width="match_parent"
+                            android:background="@color/lightgray"
+                            android:layout_margin="10dp"/>
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:padding="5dp">
+                            android:orientation="vertical">
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Fecha:"
-                                android:padding="10dp"/>
-                            <TextView
-                                android:id="@+id/centerEndTime"
-                                android:layout_width="wrap_content"
+                                android:text="Horário de funcionamento"
+                                android:textColor="@color/lightgray"
+                                android:gravity="center"
+                                android:layout_gravity="center"/>
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="06:00"
-                                android:layout_weight="0.9"
-                                android:textSize="20dp"
-                                android:textAlignment="textEnd"
-                                android:padding="5dp"/>
-
+                                android:orientation="horizontal"
+                                android:padding="10dp">
+                                <TextView
+                                    android:id="@+id/centerStartTime"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="00:00"
+                                    android:textSize="20dp"
+                                    android:padding="5dp"
+                                    android:layout_weight="0.4"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/darkgray"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="até as"
+                                    android:textColor="@color/lightgray"
+                                    android:gravity="center"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="0.2"/>
+                                <TextView
+                                    android:id="@+id/centerEndTime"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="06:00"
+                                    android:layout_weight="0.4"
+                                    android:textSize="20dp"
+                                    android:textAlignment="textEnd"
+                                    android:padding="5dp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/darkgray"/>
+                            </LinearLayout>
                         </LinearLayout>
 
                     </LinearLayout>

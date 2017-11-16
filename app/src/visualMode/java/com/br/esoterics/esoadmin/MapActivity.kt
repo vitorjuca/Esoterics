@@ -3,8 +3,10 @@ import android.annotation.SuppressLint
 import android.location.Location
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
+import android.support.v7.widget.Toolbar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.Menu
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
@@ -47,12 +49,12 @@ class MapActivity : AppCompatActivity(),
     var fm = fragmentManager
     var spinnerDialog = MySpinnerDialog()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
         spinnerDialog.show(fm, "tag")
         connectGoogleApiClient()
-        log("VISUAL")
         showEditBox(false)
 
         centerTypeFilter.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {

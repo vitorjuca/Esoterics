@@ -8,4 +8,6 @@
     <color name="colorGreen">#23b602</color>
     <color name="colorLightBlue">#077fa7</color>
     <color name="black_semi_transparent">#B2000000</color>
+    <color name="lightgray">#9B9B9B</color>
+    <color name="darkgray">#4A4A4A</color>
 </resources>
