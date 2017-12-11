@@ -9,8 +9,8 @@ android {
     flavorDimensions 'default'
     defaultConfig {
         applicationId "com.br.esoterics.esoadmin"
-        minSdkVersion 21
-        targetSdkVersion 25
+        minSdkVersion 16
+        targetSdkVersion 16
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

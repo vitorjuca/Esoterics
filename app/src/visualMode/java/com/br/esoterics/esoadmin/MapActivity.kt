@@ -1,8 +1,12 @@
 package com.br.esoterics.esoadmin
 import android.annotation.SuppressLint
+import android.content.DialogInterface
+import android.content.Intent
 import android.location.Location
 import android.os.Bundle
+import android.provider.Settings
 import android.support.v4.app.ActivityCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.Toolbar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -19,6 +23,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.visualMode.activity_map.*
 import com.br.esoterics.esoadmin.network.ApiClient
+import com.br.esoterics.esoadmin.utils.FilterManager
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
 import org.json.JSONObject
@@ -50,6 +55,8 @@ class MapActivity : AppCompatActivity(),
     var fm = fragmentManager
     var spinnerDialog = MySpinnerDialog()
 
+    private var filterManager = FilterManager()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,12 +71,41 @@ class MapActivity : AppCompatActivity(),
 
             override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, arg3: Long) {
                 var type = parent!!.getItemAtPosition(position).toString()
-                filterGoogleMapsBy(type)
+                if(googleMap != null){
+                    googleMap!!.clear()
+                    log(type)
+                    filterManager.filterCenterMarkersByType(
+                        type,
+                        storageMarkersOptionsManager,
+                        storageCenters)
+                            .forEach { markerOption ->
+                                log(markerOption.snippet)
+                                    googleMap!!.addMarker(markerOption)
+                            }
+                }
             }
         }
 
         val mapFragment = map as SupportMapFragment
         mapFragment.getMapAsync(this)
+    }
+
+    fun showGPSSettingsDialog(){
+        var alertDialog = AlertDialog.Builder(this)
+        alertDialog.setTitle("GPS Settings")
+        alertDialog.setMessage("GPS não habilitade, deseja habilitar?")
+        alertDialog.setPositiveButton("Settings", object: DialogInterface.OnClickListener{
+            override fun onClick(p0: DialogInterface?, p1: Int) {
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+        })
+        alertDialog.setNegativeButton("Cancelar", object: DialogInterface.OnClickListener{
+            override fun onClick(p0: DialogInterface?, p1: Int) {
+                p0?.cancel()
+            }
+
+        })
+        alertDialog.show()
     }
 
     fun showEditBox(flag: Boolean){
@@ -161,13 +197,13 @@ class MapActivity : AppCompatActivity(),
         centerAddress.setText(center.getAddress().fullAddress)
         centerStartTime.setText(center.getModel().time_start)
         centerEndTime.setText(center.getModel().time_end)
-        centerTypeImg.background = getDrawable(getCenterDrawable(center))
+        centerTypeImg.background = resources.getDrawable(getCenterDrawable(center))
     }
 
     @SuppressLint("MissingPermission")
-    override fun onMapReady(p0: GoogleMap?) {
+    override fun onMapReady(gMap: GoogleMap?) {
 
-        googleMap = p0
+        googleMap = gMap
 
         if (googleMap != null) {
             googleMap!!.setOnMarkerClickListener(this)
@@ -343,8 +379,6 @@ class MapActivity : AppCompatActivity(),
             myLastLocation = LocationServices
                     .FusedLocationApi
                     .getLastLocation(googleApiClient)
-            log(myLastLocation!!.latitude.toString())
-            log(myLastLocation!!.longitude.toString())
             if(myLastLocation != null){
                 log(myLastLocation!!.latitude.toString())
                 log(myLastLocation!!.longitude.toString())

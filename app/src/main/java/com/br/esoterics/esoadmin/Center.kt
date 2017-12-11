@@ -13,6 +13,7 @@ class Center : Serializable {
     private var model: Model
     private var key: String = ""
     private var icon: String = ""
+    private var isPersisted: String = "0"
 
     constructor(key: String, address: Address, model: Model, icon: String){
         this.key = key

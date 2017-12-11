@@ -49,6 +49,7 @@ class MapActivity() : AppCompatActivity(),
     private var lastCenter = Center("", Address(), Model(), "")
     private var lastCenterCheck: Boolean = false
     private var lastMarker: Marker? = null
+    private var lastMkOp = MarkerOptions()
     var fm = fragmentManager
     var instance = MySpinnerDialog()
     private var myLastLocation: Location? = null
@@ -62,113 +63,185 @@ class MapActivity() : AppCompatActivity(),
 
         showMenuBox(true)
 
+        addOnMapButton.setOnClickListener(onAddOnMap())
 
-        addOnMapButton.setOnClickListener{
-            showMarkerBox(true)
+        addMarkerButton.setOnClickListener(onMarkerPositionSetted())
+
+        centerType.onItemSelectedListener = onSpinnerSelected()
+
+        switchButton.setOnClickListener(onSwitchButton())
+
+        saveButton.setOnClickListener(onSaveButton())
+
+        removeButton.setOnClickListener(onRemoveButton())
+
+        val mapFragment = map as SupportMapFragment
+        mapFragment.getMapAsync(this)
+    }
+
+    fun onSpinnerSelected() = object: AdapterView.OnItemSelectedListener {
+
+        override fun onNothingSelected(p0: AdapterView<*>?) {}
+
+        override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, arg3: Long) {
+            var type = parent!!.getItemAtPosition(position).toString()
+            log(type)
+            centerTypeImg.background = getDrawable(getMipmapFromString(type))
         }
+    }
 
-        addMarkerButton.setOnClickListener{
+    fun onRemoveButton() = View.OnClickListener {
+        if(lastCenter.getKey() != ""){
+            removeCenterFromDatabase(lastCenter)
+            lastMarker!!.remove()
+            showEditBox(false)
+            showMenuBox(true)
+        }else{
+            sendToast("Local ainda não foi salvo")
+        }
+    }
+
+    fun onSaveButton() = View.OnClickListener {
+        if(validateEditBox()){
+            var center = lastCenter
+            center.getAddress().fullAddress = centerAddress.text.toString()
+            center.getModel().name = centerName.text.toString()
+            center.getModel().phone = centerPhone.text.toString()
+            center.getModel().type = centerType.selectedItem.toString()
+            center.getModel().time_start = centerStartTime.selectedItem.toString()
+            center.getModel().time_end = centerEndTime.selectedItem.toString()
+            center.getAddress().fullAddress = centerAddress.text.toString()
+            log(center.getModel().name)
             if(googleMap != null){
-
-                val myRef = myDatabase.push()
-                val key = myRef.key
-                val location = googleMap!!.cameraPosition.target
-                if(validateCoordinates(location.latitude,location.longitude)){
-                    instance.show(fm, "tag")
-                    val marker = MarkerOptions().position(location)
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_icon))
-                            .snippet(key)
-
-                    val geocoder = Geocoder(this, Locale.getDefault())
-                    var addresses: List<android.location.Address>
-
-                    try {
-
-
-                        addresses = geocoder.getFromLocation(location.latitude, location.longitude,1)
-                        log(addresses.get(0).locality)
-                        log(addresses.get(0).toString())
-                        log(addresses.get(0).subLocality)
-                        log(addresses.get(0).getAddressLine(0))
-                        centerAddress.setText(addresses.get(0).thoroughfare
-                                                                .plus(", ")
-                                                                .plus(addresses.get(0).featureName.toString()))
-                        instance.dismiss()
-
-                    }catch (e: Exception){
-
-                    }
-
-                    val center = Center(key,
-                            Address(latitude = location.latitude.toString(),
-                                    longitude = location.longitude.toString()),
-                            Model(), "1")
-                    storageCenters.add(center)
-                    lastCenter = center
-                    lastMarker = googleMap!!.addMarker(marker)
-                    makeSwitchChecked(true)
-                    makeEditBoxEditable(true)
-                    showEditBox(true)
-                    instance.dismiss()
+                if(center.getKey() != ""){
+                    persistCenterOnDatabase(center)
+                    editStorageCenter(center)
+                    if(lastMarker != null)
+                        lastMarker!!.setIcon(BitmapDescriptorFactory.fromResource(getCenterMipmap(center)))
                 }else{
-                    sendToast("Erro ao pegar coordenadas, tente novamente")
+                    val key = myDatabase.push().key
+                    center.setKey(key)
+                    lastMarker = googleMap!!.addMarker(lastMkOp
+                            .icon(BitmapDescriptorFactory.fromResource(getCenterMipmap(center)))
+                            .flat(true)
+                            .snippet(key))
+                    lastCenter = center
+                    storageCenters.add(center)
+                    persistCenterOnDatabase(center)
+                    if(lastMarker != null)
+                        lastMarker!!.setIcon(BitmapDescriptorFactory.fromResource(getCenterMipmap(center)))
+
                 }
             }
 
         }
+    }
 
-        centerType.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+    fun persistCenterOnDatabase(center: Center){
+        var dialog = MySpinnerDialog()
+        dialog.show(fm, "tg")
+        frame_general.isClickable = false
+        myDatabase.child("Centers")
+                .child(center.getKey())
+                .setValue(center)
+                .addOnCompleteListener {
+                    sendToast("Salvo")
+                    dialog.dismiss()
+                    frame_general.isClickable = true
+                    clearEditTexts()
+                    showEditBox(false)
+                    showMenuBox(true) }
+                .addOnFailureListener {
+                    sendToast("Problema ao salvar")
+                    dialog.dismiss()
+                    frame_general.isClickable = true }
+    }
 
-            override fun onNothingSelected(p0: AdapterView<*>?) {}
+    fun removeCenterFromDatabase(center: Center){
+        var dialog = MySpinnerDialog()
+        dialog.show(fm, "tg")
+        myDatabase.child("Centers").child(center.getKey()).removeValue()
+                .addOnCompleteListener {
+                    sendToast("Excluido")
+                    dialog.dismiss()
+                    clearEditTexts()
+                    showEditBox(false)
+                    showMenuBox(true) }
+                .addOnFailureListener {
+                    sendToast("Problema ao excluir")
+                    dialog.dismiss() }
+    }
 
-            override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, arg3: Long) {
-                var type = parent!!.getItemAtPosition(position).toString()
-                log(type)
-                centerTypeImg.background = getDrawable(getMipmapFromString(type))
+    fun editStorageCenter(center: Center){
+        for(storageCenter: Center in storageCenters){
+            if(center.getKey().equals(storageCenter.getKey())){
+                storageCenters.remove(storageCenter)
+                storageCenters.add(center)
+                break
             }
         }
+    }
 
-        switchButton.setOnClickListener {
-            if(switchButton.isChecked)
+    fun onSwitchButton() = View.OnClickListener {
+        if(switchButton.isChecked)
+            makeEditBoxEditable(true)
+        else{
+            makeEditBoxEditable(false)
+        }
+    }
+
+    fun onAddOnMap() = View.OnClickListener {
+        showMarkerBox(true)
+    }
+
+    fun onMarkerPositionSetted() = View.OnClickListener{
+        showMarkerBox(false)
+        if (googleMap != null) {
+            val dialog = MySpinnerDialog()
+            dialog.show(fm, "Set marker")
+            var locationPointer = googleMap!!.cameraPosition.target
+            if(validateCoordinates(locationPointer)){
+                var address = getAddressFromLocation(locationPointer)
+                val center = Center("",
+                        Address(latitude = locationPointer.latitude.toString(),
+                                longitude = locationPointer.longitude.toString(),
+                                fullAddress = address),
+                        Model(), "1")
+
+                lastCenter = center
+                lastMkOp.position(locationPointer)
+                centerAddress.setText(address)
+                makeSwitchChecked(true)
                 makeEditBoxEditable(true)
-            else{
-                makeEditBoxEditable(false)
-            }
-        }
-
-        saveButton.setOnClickListener{
-            if(validateEditBox()){
-                var center = lastCenter
-                center.getAddress().fullAddress = centerAddress.text.toString()
-                center.getModel().name = centerName.text.toString()
-                center.getModel().phone = centerPhone.text.toString()
-                center.getModel().type = centerType.selectedItem.toString()
-                center.getModel().time_start = centerStartTime.selectedItem.toString()
-                center.getModel().time_end = centerEndTime.selectedItem.toString()
-                center.getAddress().fullAddress = centerAddress.text.toString()
-                if(lastMarker != null)
-                    lastMarker!!.setIcon(BitmapDescriptorFactory.fromResource(getCenterMipmap(center)))
-                persistCenterOnDatabase(center)
-                clearEditTexts()
-                showEditBox(false)
-                showMenuBox(true)
-            }
-        }
-
-        removeButton.setOnClickListener {
-            if(lastCenter.getKey() != ""){
-                removeCenterFromDatabase(lastCenter)
-                lastMarker!!.remove()
-                showEditBox(false)
-                showMenuBox(true)
+                showEditBox(true)
+                dialog.dismiss()
             }else{
-                sendToast("Local ainda não foi salvo")
+                sendToast("Erro ao capturar coordenadas")
+                dialog.dismiss()
             }
 
         }
+    }
 
-        val mapFragment = map as SupportMapFragment
-        mapFragment.getMapAsync(this)
+    fun getAddressFromLocation(location: LatLng): String{
+
+        var address = ""
+        try{
+
+            val geocoder = Geocoder(this, Locale.getDefault())
+            var addressesList: List<android.location.Address>
+
+            addressesList = geocoder.getFromLocation(location.latitude, location.longitude,1)
+            address = addressesList.get(0).thoroughfare
+                    .plus(", ")
+                    .plus(addressesList.get(0).featureName.toString())
+
+            return address
+
+        }catch (e: Exception){}
+
+        return address
+
     }
 
     override fun onBackPressed() {
@@ -208,7 +281,10 @@ class MapActivity() : AppCompatActivity(),
         return flag
     }
 
-    fun validateCoordinates(latitude: Double, longitude: Double) :Boolean{
+    fun validateCoordinates(location: LatLng) :Boolean{
+        if(location.latitude == 0.0 && location.longitude == 0.0){
+            return false
+        }
         return true
     }
 
@@ -313,13 +389,7 @@ class MapActivity() : AppCompatActivity(),
         editText.setEnabled(true);
     }
 
-    fun persistCenterOnDatabase(center: Center){
-        myDatabase.child("Centers").child(center.getKey()).setValue(center)
-    }
 
-    fun removeCenterFromDatabase(center: Center){
-        myDatabase.child("Centers").child(center.getKey()).removeValue()
-    }
 
     fun loadEditBoxWithInfoFrom(center: Center){
         centerType.setSelection(getSpinnerId(centerType,center.getModel().type))
@@ -350,6 +420,7 @@ class MapActivity() : AppCompatActivity(),
             googleMap!!.setOnMapClickListener(this)
             googleMap!!.setOnMapLongClickListener(this)
             instance.show(fm, "tags")
+            frame_general.isClickable = false
             if(locationPermissionManager.isPermissionGranted(this)){
                 googleMap!!.setMyLocationEnabled(true)
                 googleMap!!.getUiSettings().setMyLocationButtonEnabled(true)
@@ -389,13 +460,16 @@ class MapActivity() : AppCompatActivity(),
 
 
     override fun onMapClick(location: LatLng?) {
-        addButtonMenu.collapse()
-        showMenuBox(true)
-        if(lastMarker != null){
-            if(lastMarker!!.snippet.isNullOrBlank()){
-                lastMarker!!.remove()
+        if(editBox.visibility == GONE){
+            addButtonMenu.collapse()
+            showMenuBox(true)
+            if(lastMarker != null){
+                if(lastMarker!!.snippet.isNullOrBlank()){
+                    lastMarker!!.remove()
+                }
             }
         }
+
 
     }
 
@@ -405,6 +479,7 @@ class MapActivity() : AppCompatActivity(),
 
     fun getAllLocations(){
         val dbQuery = myDatabase.child(CENTERS)
+
         dbQuery.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {}
             override fun onDataChange(dataSnapshot: DataSnapshot?) {
@@ -453,9 +528,12 @@ class MapActivity() : AppCompatActivity(),
 
                         }
                         instance.dismiss()
+                        frame_general.isClickable = true
                         Log.d("HIDE PROGRESS BAR", "HIDE")
                         //hideProgressBar()
                     }
+                }else{
+                    instance.dismiss()
                 }
             }
         })
@@ -478,8 +556,7 @@ class MapActivity() : AppCompatActivity(),
             myLastLocation = LocationServices
                                 .FusedLocationApi
                                 .getLastLocation(googleApiClient)
-            log(myLastLocation!!.latitude.toString())
-            log(myLastLocation!!.longitude.toString())
+
             if(myLastLocation != null){
                 log(myLastLocation!!.latitude.toString())
                 log(myLastLocation!!.longitude.toString())

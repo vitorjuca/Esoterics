@@ -17,6 +17,7 @@ class MySpinnerDialog : DialogFragment() {
         this.setStyle(android.app.DialogFragment.STYLE_NO_TITLE, theme)
         dialog.setMessage("Loading...")
         dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(false)
         return dialog
     }
 }
