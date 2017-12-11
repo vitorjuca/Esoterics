@@ -1,71 +1,27 @@
 {
   "project_info": {
-    "project_number": "6239368000",
-    "firebase_url": "https://esotericos-3473f.firebaseio.com",
-    "project_id": "esotericos-3473f",
-    "storage_bucket": "esotericos-3473f.appspot.com"
+    "project_number": "390069004361",
+    "firebase_url": "https://esoterismo-6d0a7.firebaseio.com",
+    "project_id": "esoterismo-6d0a7",
+    "storage_bucket": "esoterismo-6d0a7.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:6239368000:android:b53f377497f432b1",
+        "mobilesdk_app_id": "1:390069004361:android:c082a82dc59af5e1",
         "android_client_info": {
-          "package_name": "com.br.esoterics.esoadmin"
+          "package_name": "com.br.dev.vj.esoterics"
         }
       },
       "oauth_client": [
         {
-          "client_id": "6239368000-frh9bmdj7jari436cdnslcrvf8v8nopk.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.br.esoterics.esoadmin",
-            "certificate_hash": "9dfa55d384d4662c3d2d69c433156ded656f206d"
-          }
-        },
-        {
-          "client_id": "6239368000-k4h2k4vd4bn6e7ckqlfhjubh3as054em.apps.googleusercontent.com",
+          "client_id": "390069004361-i3p5ceiki4dqi6i3vrfabf7ke1trfgtt.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBXwtnCqkgzkZRwewNcZHyh52b5W8ListQ"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "6239368000-k4h2k4vd4bn6e7ckqlfhjubh3as054em.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:6239368000:android:8b341524851db982",
-        "android_client_info": {
-          "package_name": "com.br.esoterics.esoadmin.visualmode"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "6239368000-k4h2k4vd4bn6e7ckqlfhjubh3as054em.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBXwtnCqkgzkZRwewNcZHyh52b5W8ListQ"
+          "current_key": "AIzaSyCV-zkkSgk_AWDS0kzFYSVaIMS6-dZsrAo"
         }
       ],
       "services": {
@@ -83,20 +39,51 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:6239368000:android:df54495ca7ddb7aa",
+        "mobilesdk_app_id": "1:390069004361:android:1057b7378839f337",
         "android_client_info": {
-          "package_name": "com.br.esoterics.esoadmin.editmode"
+          "package_name": "com.br.dev.vj.esoterics.visual"
         }
       },
       "oauth_client": [
         {
-          "client_id": "6239368000-k4h2k4vd4bn6e7ckqlfhjubh3as054em.apps.googleusercontent.com",
+          "client_id": "390069004361-i3p5ceiki4dqi6i3vrfabf7ke1trfgtt.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBXwtnCqkgzkZRwewNcZHyh52b5W8ListQ"
+          "current_key": "AIzaSyCV-zkkSgk_AWDS0kzFYSVaIMS6-dZsrAo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:390069004361:android:bab723b02d44b809",
+        "android_client_info": {
+          "package_name": "com.br.dev.vj.esoterics.edit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "390069004361-i3p5ceiki4dqi6i3vrfabf7ke1trfgtt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCV-zkkSgk_AWDS0kzFYSVaIMS6-dZsrAo"
         }
       ],
       "services": {

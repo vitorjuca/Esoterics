@@ -1,7 +1,6 @@
-package com.br.esoterics.esoadmin
+package com.br.esoterics.dev
 
 import android.annotation.SuppressLint
-import android.app.FragmentManager
 import android.app.ProgressDialog
 import android.graphics.Color
 import android.os.Bundle
@@ -24,8 +23,6 @@ import android.view.View
 import android.view.animation.*
 import android.widget.AdapterView
 import android.widget.Spinner
-import com.br.esoterics.esoadmin.*
-import com.br.esoterics.esoadmin.R
 import com.google.android.gms.maps.*
 import kotlinx.android.synthetic.editMode.activity_map.*
 import java.util.*
@@ -46,7 +43,7 @@ class MapActivity() : AppCompatActivity(),
     private var googleApiClient: GoogleApiClient? = null
     private val myDatabase: DatabaseReference = FirebaseDatabase.getInstance().getReference()
     private val storageCenters = ArrayList<Center>()
-    private var lastCenter = Center("", Address(), Model(), "")
+    private var lastCenter = Center()
     private var lastCenterCheck: Boolean = false
     private var lastMarker: Marker? = null
     private var lastMkOp = MarkerOptions()
@@ -86,12 +83,12 @@ class MapActivity() : AppCompatActivity(),
         override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, arg3: Long) {
             var type = parent!!.getItemAtPosition(position).toString()
             log(type)
-            centerTypeImg.background = getDrawable(getMipmapFromString(type))
+            centerTypeImg.background = resources.getDrawable(getMipmapFromString(type))
         }
     }
 
     fun onRemoveButton() = View.OnClickListener {
-        if(lastCenter.getKey() != ""){
+        if(lastCenter.key != ""){
             removeCenterFromDatabase(lastCenter)
             lastMarker!!.remove()
             showEditBox(false)
@@ -104,23 +101,23 @@ class MapActivity() : AppCompatActivity(),
     fun onSaveButton() = View.OnClickListener {
         if(validateEditBox()){
             var center = lastCenter
-            center.getAddress().fullAddress = centerAddress.text.toString()
-            center.getModel().name = centerName.text.toString()
-            center.getModel().phone = centerPhone.text.toString()
-            center.getModel().type = centerType.selectedItem.toString()
-            center.getModel().time_start = centerStartTime.selectedItem.toString()
-            center.getModel().time_end = centerEndTime.selectedItem.toString()
-            center.getAddress().fullAddress = centerAddress.text.toString()
-            log(center.getModel().name)
+            center.address.fullAddress = centerAddress.text.toString()
+            center.model.name = centerName.text.toString()
+            center.model.phone = centerPhone.text.toString()
+            center.model.type = centerType.selectedItem.toString()
+            center.model.time_start = centerStartTime.selectedItem.toString()
+            center.model.time_end = centerEndTime.selectedItem.toString()
+            center.address.fullAddress = centerAddress.text.toString()
+            log(center.model.name)
             if(googleMap != null){
-                if(center.getKey() != ""){
+                if(center.key != ""){
                     persistCenterOnDatabase(center)
                     editStorageCenter(center)
                     if(lastMarker != null)
                         lastMarker!!.setIcon(BitmapDescriptorFactory.fromResource(getCenterMipmap(center)))
                 }else{
                     val key = myDatabase.push().key
-                    center.setKey(key)
+                    center.key = key
                     lastMarker = googleMap!!.addMarker(lastMkOp
                             .icon(BitmapDescriptorFactory.fromResource(getCenterMipmap(center)))
                             .flat(true)
@@ -142,7 +139,7 @@ class MapActivity() : AppCompatActivity(),
         dialog.show(fm, "tg")
         frame_general.isClickable = false
         myDatabase.child("Centers")
-                .child(center.getKey())
+                .child(center.key)
                 .setValue(center)
                 .addOnCompleteListener {
                     sendToast("Salvo")
@@ -160,7 +157,7 @@ class MapActivity() : AppCompatActivity(),
     fun removeCenterFromDatabase(center: Center){
         var dialog = MySpinnerDialog()
         dialog.show(fm, "tg")
-        myDatabase.child("Centers").child(center.getKey()).removeValue()
+        myDatabase.child("Centers").child(center.key).removeValue()
                 .addOnCompleteListener {
                     sendToast("Excluido")
                     dialog.dismiss()
@@ -174,7 +171,7 @@ class MapActivity() : AppCompatActivity(),
 
     fun editStorageCenter(center: Center){
         for(storageCenter: Center in storageCenters){
-            if(center.getKey().equals(storageCenter.getKey())){
+            if(center.key.equals(storageCenter.key)){
                 storageCenters.remove(storageCenter)
                 storageCenters.add(center)
                 break
@@ -202,11 +199,10 @@ class MapActivity() : AppCompatActivity(),
             var locationPointer = googleMap!!.cameraPosition.target
             if(validateCoordinates(locationPointer)){
                 var address = getAddressFromLocation(locationPointer)
-                val center = Center("",
-                        Address(latitude = locationPointer.latitude.toString(),
-                                longitude = locationPointer.longitude.toString(),
-                                fullAddress = address),
-                        Model(), "1")
+                val center = Center()
+                center.address.latitude = locationPointer.latitude.toString()
+                center.address.longitude = locationPointer.longitude.toString()
+                center.address.fullAddress = address
 
                 lastCenter = center
                 lastMkOp.position(locationPointer)
@@ -352,8 +348,8 @@ class MapActivity() : AppCompatActivity(),
 
     fun makeEditBoxEditable(flag: Boolean){
         if(flag){
-            removeButton.background = getDrawable(R.drawable.box_remove)
-            saveButton.background = getDrawable(R.drawable.box_save)
+            removeButton.background = resources.getDrawable(R.drawable.box_remove)
+            saveButton.background = resources.getDrawable(R.drawable.box_save)
             removeButton.setTextColor(Color.WHITE)
             saveButton.setTextColor(Color.WHITE)
             removeButton.isEnabled = true
@@ -366,8 +362,8 @@ class MapActivity() : AppCompatActivity(),
             enableEditText(centerAddress)
         }else{
             makeSwitchChecked(false)
-            removeButton.background = getDrawable(R.drawable.non_editable)
-            saveButton.background = getDrawable(R.drawable.non_editable)
+            removeButton.background = resources.getDrawable(R.drawable.non_editable)
+            saveButton.background = resources.getDrawable(R.drawable.non_editable)
             removeButton.setTextColor(Color.LTGRAY)
             saveButton.setTextColor(Color.LTGRAY)
             removeButton.isEnabled = false
@@ -392,12 +388,12 @@ class MapActivity() : AppCompatActivity(),
 
 
     fun loadEditBoxWithInfoFrom(center: Center){
-        centerType.setSelection(getSpinnerId(centerType,center.getModel().type))
-        centerName.setText(center.getModel().name)
-        centerPhone.setText(center.getModel().phone)
-        centerAddress.setText(center.getAddress().fullAddress)
-        centerStartTime.setSelection(getSpinnerId(centerStartTime,center.getModel().time_start))
-        centerEndTime.setSelection(getSpinnerId(centerEndTime,center.getModel().time_end))
+        centerType.setSelection(getSpinnerId(centerType,center.model.type))
+        centerName.setText(center.model.name)
+        centerPhone.setText(center.model.phone)
+        centerAddress.setText(center.address.fullAddress)
+        centerStartTime.setSelection(getSpinnerId(centerStartTime,center.model.time_start))
+        centerEndTime.setSelection(getSpinnerId(centerEndTime,center.model.time_end))
     }
 
     fun getSpinnerId(spinner: Spinner,string: String): Int{
@@ -440,7 +436,7 @@ class MapActivity() : AppCompatActivity(),
             var centerDAO: Center? = null
             var flag = false
             for (center: Center in storageCenters){
-                if(center.getKey().equals(marker.snippet)){
+                if(center.key.equals(marker.snippet)){
                     centerDAO = center
                     flag = true
                     break
@@ -451,7 +447,7 @@ class MapActivity() : AppCompatActivity(),
                     loadEditBoxWithInfoFrom(centerDAO)
             }
 
-            lastCenter.setKey(marker.snippet)
+            lastCenter.key = marker.snippet
         }
         showEditBox(true)
         return true
@@ -493,29 +489,22 @@ class MapActivity() : AppCompatActivity(),
                             Log.d("KEY",key)
                             val address = center.child(ADDRESS)
                             val model = center.child(MODEL)
-                            val myCenter = Center(
-                                    center.key,
-                                    Address(street = address.child("street").value.toString(),
-                                            number = address.child("number").value.toString(),
-                                            city = address.child("city").value.toString(),
-                                            state = address.child("state").value.toString(),
-                                            country = address.child("country").value.toString(),
-                                            latitude = address.child("latitude").value.toString(),
-                                            longitude = address.child("longitude").value.toString(),
-                                            neighborhood = address.child("neighborhood").value.toString(),
-                                            fullAddress = address.child("fullAddress").value.toString()),
-                                    Model(name = model.child("name").value.toString(),
-                                            phone = model.child("phone").value.toString(),
-                                            time_end = model.child("time_end").value.toString(),
-                                            time_start = model.child("time_start").value.toString(),
-                                            type = model.child("type").value.toString()),
-                                    ""
-                            )
+                            val myCenter = Center()
+                            myCenter.key = key
+                            myCenter.address.latitude = center.child(ADDRESS).child("latitude").value.toString()
+                            myCenter.address.longitude = center.child(ADDRESS).child("longitude").value.toString()
+                            myCenter.model.name = center.child(MODEL).child("name").value.toString()
+                            myCenter.model.type = center.child(MODEL).child("type").value.toString()
+                            myCenter.model.time_start = center.child(MODEL).child("time_start").value.toString()
+                            myCenter.model.time_end = center.child(MODEL).child("time_end").value.toString()
+                            myCenter.model.phone = center.child(MODEL).child("phone").value.toString()
+                            myCenter.address.fullAddress = center.child(ADDRESS).child("fullAddress").value.toString()
+
                             storageCenters.add(myCenter)
 
-                            val centerLatitude = myCenter.getAddress().latitude.toDouble()
-                            val centerLongitude = myCenter.getAddress().longitude.toDouble()
-                            val centerKey = myCenter.getKey()
+                            val centerLatitude = myCenter.address.latitude.toDouble()
+                            val centerLongitude = myCenter.address.longitude.toDouble()
+                            val centerKey = myCenter.key
 
                             val marker = MarkerOptions()
                             marker.position(LatLng(centerLatitude, centerLongitude))
@@ -583,7 +572,7 @@ class MapActivity() : AppCompatActivity(),
     override fun onProviderDisabled(p0: String?) {}
 
     fun getCenterMipmap(center: Center): Int{
-        var centerType = center.getModel().type
+        var centerType = center.model.type
         if(centerType.equals("Umbanda")){
             return R.mipmap.umbanda
         }else if(centerType.equals("Candomblé")){

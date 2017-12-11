@@ -1,10 +1,16 @@
-package com.br.esoterics.esoadmin
+package com.br.esoterics.dev
+
+
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.AdapterView
+import android.widget.Toast
+import com.br.esoterics.esoadmin.R
+import com.br.esoterics.esoadmin.helpers.isNetWorkOnline
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -25,20 +31,34 @@ class MapActivity: AppCompatActivity(),
         GoogleApiClient.ConnectionCallbacks,
         GoogleMap.OnMapClickListener
 {
+
     private val mapPresenter by lazy { MapPresenter(this) }
     private val googleApiClient by lazy { initGoogleApiClient() }
+    private val progressDialog by lazy { initProgressDialog() }
     private var googleMap: GoogleMap? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
+
+        progressDialog.setTitle("Carregando")
+        progressDialog.setMessage("Aguarde...")
+        progressDialog.setCancelable(false)
+
+        mapPresenter.startApp(isNetWorkOnline())
+    }
+    override fun onStartAppCallback() {
         connectGoogleApiClient()
         hideCenterInfo()
         centerTypeFilter.onItemSelectedListener = onItemSelectedListener()
 
         val mapFragment = map as SupportMapFragment
         mapFragment.getMapAsync(this)
+    }
+
+    override fun showErrorView() {
+        showToast("Sem conexão com internet")
     }
 
     override fun onMapReady(gMap: GoogleMap?) {
@@ -102,6 +122,14 @@ class MapActivity: AppCompatActivity(),
         super.onBackPressed()
     }
 
+    override fun showProgressDialog() {
+        progressDialog.show()
+    }
+
+    override fun dismissProgressDialog() {
+        progressDialog.dismiss()
+    }
+
     override fun clearGoogleMap() {
         if (googleMap != null) {
             googleMap!!.clear()
@@ -138,6 +166,11 @@ class MapActivity: AppCompatActivity(),
                 .build()
     }
 
+    fun initProgressDialog(): ProgressDialog {
+        return ProgressDialog(this)
+    }
+
+
     fun onItemSelectedListener() = object : AdapterView.OnItemSelectedListener {
 
         override fun onNothingSelected(p0: AdapterView<*>?) {}
@@ -145,11 +178,12 @@ class MapActivity: AppCompatActivity(),
         override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, arg3: Long) {
             var type = parent!!.getItemAtPosition(position).toString()
             mapPresenter.filterMarkerByType(type)
-
-
         }
     }
 
+    override fun showToast(data: String) {
+        Toast.makeText(this, data, Toast.LENGTH_SHORT).show()
+    }
 
 
 }

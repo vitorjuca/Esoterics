@@ -8,7 +8,7 @@ android {
     compileSdkVersion 25
     flavorDimensions 'default'
     defaultConfig {
-        applicationId "com.br.esoterics.esoadmin"
+        applicationId "com.br.dev.vj.esoterics"
         minSdkVersion 16
         targetSdkVersion 16
         versionCode 1
@@ -23,10 +23,10 @@ android {
     }
     productFlavors {
         visualMode {
-            applicationId 'com.br.esoterics.esoadmin.visualmode'
+            applicationId 'com.br.dev.vj.esoterics.visual'
         }
         editMode {
-            applicationId 'com.br.esoterics.esoadmin.editmode'
+            applicationId 'com.br.dev.vj.esoterics.edit'
 
         }
     }

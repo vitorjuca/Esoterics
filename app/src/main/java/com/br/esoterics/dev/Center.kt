@@ -1,4 +1,4 @@
-package com.br.dev.vj
+package com.br.esoterics.dev
 
 /**
  * Created by vaniajuca on 27/10/17.

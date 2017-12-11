@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application>
-        <activity android:name="com.br.esoterics.esoadmin.MapActivity" />
+        <activity android:name="com.br.esoterics.dev.MapActivity" />
     </application>
 
 </manifest>

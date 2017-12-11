@@ -1,4 +1,4 @@
-package com.br.esoterics.esoadmin
+package com.br.esoterics.dev
 
 import android.util.Log
 
