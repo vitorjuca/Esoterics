@@ -1,10 +1,7 @@
-package br.com.dev.vj
+package com.br.esoterics.esoadmin
 
 import android.view.View
 import com.br.dev.vj.Center
-import com.br.esoterics.esoadmin.ADDRESS
-import com.br.esoterics.esoadmin.MODEL
-import com.br.esoterics.esoadmin.R
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -30,7 +27,9 @@ class MapPresenter(val view: MapContract.View): BasePresenter(), MapContract.Pre
 
     override fun loadMarkerInfo(marker: Marker){
         var center = searchCenterFromMarkerKey(marker)
-        view.showCenterInfo(center)
+        logDebug(center.model.phone)
+        logDebug(center.address.fullAddress)
+        view.showCenterInfo(center, getCenterDrawable(center))
     }
 
     override fun populateMarkersOptionsFromCenters(centersList: ArrayList<Center>) {
@@ -57,7 +56,23 @@ class MapPresenter(val view: MapContract.View): BasePresenter(), MapContract.Pre
     }
 
     override fun populateMarkerFromGoogleMap(marker: Marker) {
-        storageMarkers.add(marker)
+            storageMarkers.add(marker)
+    }
+
+    override fun filterMarkerByType(type: String) {
+        var centerFiltered = storageCenters.filter { center ->
+            !center.model.type.equals(type)
+        }
+        storageMarkers.forEach { marker ->
+            marker.isVisible = true
+            if (!type.equals("Todos")){
+                centerFiltered.forEach { center ->
+                    logDebug(center.model.type)
+                    if (center.key.equals(marker.snippet))
+                        marker.isVisible = false
+                }
+            }
+        }
     }
 
     override fun onBackPressed(state: Int) {
@@ -67,6 +82,8 @@ class MapPresenter(val view: MapContract.View): BasePresenter(), MapContract.Pre
             view.onBackPressedTwice()
         }
     }
+
+
 
     private fun searchCenterFromMarkerKey(marker: Marker): Center{
         var filterResult = storageCenters.filter { it ->
@@ -84,11 +101,21 @@ class MapPresenter(val view: MapContract.View): BasePresenter(), MapContract.Pre
                     var center = Center()
                     center.key = data.key
                     center.address.latitude = data.child(ADDRESS).child("latitude").value.toString()
+                    logDebug(center.address.latitude)
                     center.address.longitude = data.child(ADDRESS).child("longitude").value.toString()
+                    logDebug(center.address.longitude)
                     center.model.name = data.child(MODEL).child("name").value.toString()
+                    logDebug(center.model.name)
                     center.model.type = data.child(MODEL).child("type").value.toString()
+                    logDebug(center.model.type)
                     center.model.time_start = data.child(MODEL).child("time_start").value.toString()
+                    logDebug(center.model.time_start)
                     center.model.time_end = data.child(MODEL).child("time_end").value.toString()
+                    logDebug(center.model.time_end)
+                    center.model.phone = data.child(MODEL).child("phone").value.toString()
+                    logDebug(center.model.phone)
+                    center.address.fullAddress = data.child(ADDRESS).child("fullAddress").value.toString()
+                    logDebug(center.address.fullAddress)
                     storageCenters.add(center)
                 }
                 view.onRequestAllCentersCallback(storageCenters)

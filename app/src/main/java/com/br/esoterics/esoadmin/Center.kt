@@ -1,4 +1,4 @@
-package com.br.esoterics.esoadmin
+package com.br.dev.vj
 
 /**
  * Created by vaniajuca on 27/10/17.
@@ -8,33 +8,31 @@ import java.io.Serializable
 
 
 
-class Center : Serializable {
-    private var address: Address
-    private var model: Model
-    private var key: String = ""
-    private var icon: String = ""
-    private var isPersisted: String = "0"
+data class Center(
+        var address: Address = Address(),
+        var model: Model = Model(),
+        var key: String = "",
+        var icon: String = "",
+        var isPersisted: String = "0") : Serializable
 
-    constructor(key: String, address: Address, model: Model, icon: String){
-        this.key = key
-        this.address = address
-        this.model = model
-        this.icon = icon
-    }
 
-    fun getKey() : String{
-        return this.key
-    }
 
-    fun setKey(key: String){
-        this.key = key
-    }
+data class Address(
+        var street: String = "0",
+        var number: String = "0",
+        var city: String = "0",
+        var state: String = "0",
+        var country: String = "0",
+        var latitude: String = "0",
+        var longitude: String = "0",
+        var neighborhood: String = "0",
+        var fullAddress: String = "0"
+)
 
-    fun getAddress() : Address {
-        return this.address
-    }
-
-    fun getModel(): Model {
-        return this.model
-    }
-}
+data class Model(
+        var name: String = "0",
+        var phone: String = "0",
+        var time_end: String = "0",
+        var time_start: String = "0",
+        var type: String = "0"
+)

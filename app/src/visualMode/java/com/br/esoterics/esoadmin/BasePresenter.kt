@@ -1,4 +1,4 @@
-package br.com.dev.vj
+package com.br.esoterics.esoadmin
 
 import android.util.Log
 
