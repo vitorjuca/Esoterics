@@ -28,7 +28,8 @@ import kotlinx.android.synthetic.editMode.activity_map.*
 import java.util.*
 
 
-class MapActivity() : AppCompatActivity(),
+class MapActivity : AppCompatActivity(),
+        MapContract.View,
         OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
@@ -37,7 +38,7 @@ class MapActivity() : AppCompatActivity(),
         GoogleMap.OnMapLongClickListener,
         LocationListener{
 
-
+    private val mapPresenter by lazy { initMapPresenter() }
     private var googleMap: GoogleMap? = null
     private val locationPermissionManager = LocationPermissionManager()
     private var googleApiClient: GoogleApiClient? = null
@@ -599,6 +600,10 @@ class MapActivity() : AppCompatActivity(),
         }else{
             return R.mipmap.outros
         }
+    }
+
+    fun initMapPresenter(): MapPresenter{
+        return MapPresenter(this)
     }
 
 }
