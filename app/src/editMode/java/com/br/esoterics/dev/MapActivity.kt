@@ -54,6 +54,10 @@ class MapActivity : AppCompatActivity(),
 
 
 
+
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
@@ -77,7 +81,7 @@ class MapActivity : AppCompatActivity(),
         mapFragment.getMapAsync(this)
     }
 
-    fun onSpinnerSelected() = object: AdapterView.OnItemSelectedListener {
+    private fun onSpinnerSelected() = object: AdapterView.OnItemSelectedListener {
 
         override fun onNothingSelected(p0: AdapterView<*>?) {}
 

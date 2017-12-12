@@ -150,6 +150,6 @@ class MapPresenter(val view: MapContract.View): BasePresenter(), MapContract.Pre
     }
 
     private fun initFireBase(): DatabaseReference {
-        return FirebaseDatabase.getInstance().getReference()
+        return FirebaseDatabase.getInstance().reference
     }
 }

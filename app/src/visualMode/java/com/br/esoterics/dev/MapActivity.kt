@@ -53,6 +53,7 @@ class MapActivity: AppCompatActivity(),
         hideCenterInfo()
         centerTypeFilter.onItemSelectedListener = onItemSelectedListener()
 
+
         val mapFragment = map as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
