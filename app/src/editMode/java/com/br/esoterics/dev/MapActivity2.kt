@@ -66,7 +66,7 @@ class MapActivity2: AppCompatActivity(),
 
         override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, arg3: Long) {
             var type = parent!!.getItemAtPosition(position).toString()
-            mapPresenter.onSwitchButton(type)
+            mapPresenter.onSpinnerSelected(type)
 //            centerTypeImg.background = resources.getDrawable(getMipmapFromString(type))
         }
     }

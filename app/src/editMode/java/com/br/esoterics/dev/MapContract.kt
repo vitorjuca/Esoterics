@@ -4,7 +4,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
 /**
- * Created by vaniajuca on 11/12/17.
+ * Created by vitorjuca on 11/12/17.
  */
 interface MapContract {
 
@@ -20,7 +20,8 @@ interface MapContract {
         fun showProgressDialog()
         fun dismissProgressDialog()
         fun onSaveButton()
-        fun onSwitchButton(data: String)
+        fun onSwitchButton()
+        fun onSpinnerSelected(data: String)
         fun onRemoveButton()
         fun onMarkerPositionSetted()
         fun onAddOnMap()

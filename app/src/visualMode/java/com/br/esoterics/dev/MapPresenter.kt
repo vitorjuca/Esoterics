@@ -12,7 +12,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.*
 
 /**
- * Created by vaniajuca on 10/12/17.
+ * Created by vitorjuca on 10/12/17.
  */
 class MapPresenter(val view: MapContract.View): BasePresenter(), MapContract.Presenter {
 

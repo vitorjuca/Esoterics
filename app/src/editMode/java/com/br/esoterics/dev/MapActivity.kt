@@ -29,7 +29,6 @@ import java.util.*
 
 
 class MapActivity : AppCompatActivity(),
-        MapContract.View,
         OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
@@ -38,11 +37,10 @@ class MapActivity : AppCompatActivity(),
         GoogleMap.OnMapLongClickListener,
         LocationListener{
 
-    private val mapPresenter by lazy { initMapPresenter() }
     private var googleMap: GoogleMap? = null
     private val locationPermissionManager = LocationPermissionManager()
     private var googleApiClient: GoogleApiClient? = null
-    private val myDatabase: DatabaseReference = FirebaseDatabase.getInstance().getReference()
+    private val myDatabase: DatabaseReference = FirebaseDatabase.getInstance().reference
     private val storageCenters = ArrayList<Center>()
     private var lastCenter = Center()
     private var lastCenterCheck: Boolean = false
@@ -51,11 +49,6 @@ class MapActivity : AppCompatActivity(),
     var fm = fragmentManager
     var instance = MySpinnerDialog()
     private var myLastLocation: Location? = null
-
-
-
-
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -606,8 +599,5 @@ class MapActivity : AppCompatActivity(),
         }
     }
 
-    fun initMapPresenter(): MapPresenter{
-        return MapPresenter(this)
-    }
 
 }

@@ -6,7 +6,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
 /**
- * Created by vaniajuca on 11/12/17.
+ * Created by vitorjuca on 11/12/17.
  */
 class MapPresenter(val view: MapContract.View ): BasePresenter(), MapContract.Presenter {
 
@@ -55,7 +55,10 @@ class MapPresenter(val view: MapContract.View ): BasePresenter(), MapContract.Pr
     override fun onSaveButton() {
     }
 
-    override fun onSwitchButton(data: String) {
+    override fun onSwitchButton() {
+    }
+
+    override fun onSpinnerSelected(data: String) {
         getDrawableFromString(data)
     }
 
