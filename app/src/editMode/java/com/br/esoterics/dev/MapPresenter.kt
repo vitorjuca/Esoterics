@@ -2,8 +2,7 @@ package com.br.esoterics.dev
 
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 
 /**
  * Created by vitorjuca on 11/12/17.
@@ -26,6 +25,29 @@ class MapPresenter(val view: MapContract.View ): BasePresenter(), MapContract.Pr
     }
 
     override fun requestAllCenters() {
+        val query = firebase.child("Centers")
+        query.addListenerForSingleValueEvent(onValueEventListener())
+    }
+
+    private fun onValueEventListener() = object : ValueEventListener {
+        override fun onCancelled(p0: DatabaseError?) {}
+
+        override fun onDataChange(dataSnapshot: DataSnapshot?) {
+            dataSnapshot?.children?.forEach{ data ->
+                var center = Center()
+                center.key = data.key
+                center.address.latitude = data.child(ADDRESS).child("latitude").value.toString()
+                center.address.longitude = data.child(ADDRESS).child("longitude").value.toString()
+                center.model.name = data.child(MODEL).child("name").value.toString()
+                center.model.type = data.child(MODEL).child("type").value.toString()
+                center.model.time_start = data.child(MODEL).child("time_start").value.toString()
+                center.model.time_end = data.child(MODEL).child("time_end").value.toString()
+                center.model.phone = data.child(MODEL).child("phone").value.toString()
+                center.address.fullAddress = data.child(ADDRESS).child("fullAddress").value.toString()
+                storageCenters.add(center)
+            }
+            view.onRequestAllCentersCallback(storageCenters)
+        }
     }
 
     override fun populateMarkersOptionsFromCenters(centersList: ArrayList<Center>) {
