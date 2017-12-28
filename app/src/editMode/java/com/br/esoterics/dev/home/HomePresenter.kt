@@ -23,11 +23,18 @@ class HomePresenter(val view: HomeContract.View): HomeContract.Presenter {
     }
 
     override fun requestRemoveCenter(isNetworkOnline: Boolean, center: Center) {
-        
+        TODO("MUST FINISH THE REMOVE MARKER")
+        if (isNetworkOnline){
+            repository.requestRemoveCenter(center,
+                    onSuccess = { view.removeMarker() },
+                    onError = { view.showError(it) })
+        }
     }
 
     override fun requestSaveCenter(isNetworkOnline: Boolean, center: Center) {
+        if (isNetworkOnline){
 
+        }
     }
 
 }

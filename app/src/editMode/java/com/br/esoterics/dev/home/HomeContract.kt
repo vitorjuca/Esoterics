@@ -12,6 +12,7 @@ interface HomeContract {
         fun insertCenter(center: Center)
         fun onSaveButtonClick(center: Center)
         fun onRemoveButtonClick(center: Center)
+        fun removeMarker()
     }
     interface Presenter{
         fun requestAllCenters(isNetworkOnline: Boolean)

@@ -2,6 +2,7 @@ package com.br.esoterics.dev.home
 
 import com.br.esoterics.dev.Center
 import com.br.esoterics.dev.helpers.dataThrowable
+import com.br.esoterics.dev.helpers.deleteThrowable
 import com.google.firebase.database.*
 
 /**
@@ -32,6 +33,13 @@ class HomeRepository {
             }
 
         })
+    }
+
+    fun requestRemoveCenter(center: Center, onSuccess: (it: Boolean) -> Unit, onError: (t: Throwable) -> Unit){
+        val request = firebase.child("Centers")
+        request.child(center.key).removeValue()
+                .addOnCompleteListener { onSuccess.invoke(true) }
+                .addOnFailureListener{ onError.invoke(deleteThrowable) }
     }
 
 

@@ -17,5 +17,6 @@ fun Context.isNetworkOnline(): Boolean{
 
 val defaultThrowable by lazy { Throwable("Unknown error") }
 val dataThrowable by lazy { Throwable("Unable to get the data") }
+val deleteThrowable by lazy { Throwable("Unable to get the data") }
 
 
