@@ -549,6 +549,7 @@ class MapActivity : AppCompatActivity(),
                 log(myLastLocation!!.longitude.toString())
                 googleMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(myLastLocation!!.latitude,
                         myLastLocation!!.longitude),15F))
+                var x = 0
             }
 
         }catch (e: SecurityException){}
