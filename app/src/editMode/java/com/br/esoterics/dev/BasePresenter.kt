@@ -7,7 +7,7 @@ import android.util.Log
  */
 open class BasePresenter {
 
-    fun logDebug(data: String){
+    fun log(data: String){
         Log.d("Debug", data)
     }
 }
