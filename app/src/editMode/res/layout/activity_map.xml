@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.br.esoterics.dev.com.br.esoterics.dev.MapActivity">
+    tools:context="com.br.esoterics.dev.MapActivity">
 
 
     <FrameLayout
