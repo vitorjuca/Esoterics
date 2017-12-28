@@ -31,7 +31,7 @@
                 android:orientation="vertical"
                 android:background="@drawable/box_shadow"
                 android:padding="10dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:clickable="true">
                 <Switch
                     android:id="@+id/switchButton"
@@ -224,7 +224,8 @@
                 app:fab_addButtonSize="normal"
                 app:fab_labelsPosition="left"
                 android:layout_gravity="bottom|end"
-                app:fab_labelStyle="@style/menu_labels_style">
+                app:fab_labelStyle="@style/menu_labels_style"
+                android:visibility="gone">
 
                 <com.getbase.floatingactionbutton.FloatingActionButton
                     android:id="@+id/addByAddressButton"

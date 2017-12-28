@@ -1,6 +1,7 @@
 package com.br.esoterics.dev.home
 
 import com.br.esoterics.dev.Center
+import com.br.esoterics.dev.helpers.dataSaveThrowable
 import com.br.esoterics.dev.helpers.dataThrowable
 import com.br.esoterics.dev.helpers.deleteThrowable
 import com.google.firebase.database.*
@@ -40,6 +41,13 @@ class HomeRepository {
         request.child(center.key).removeValue()
                 .addOnCompleteListener { onSuccess.invoke(true) }
                 .addOnFailureListener{ onError.invoke(deleteThrowable) }
+    }
+
+    fun requestSaveCenter(center: Center, onSuccess: (it: Boolean) -> Unit, onError: (t: Throwable) -> Unit){
+        val request = firebase.child("Centers")
+        request.child(center.key).setValue(center)
+                .addOnCompleteListener { onSuccess.invoke(true) }
+                .addOnFailureListener { onError.invoke(dataSaveThrowable) }
     }
 
 
