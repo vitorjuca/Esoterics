@@ -36,12 +36,6 @@ class Home : AppCompatActivity(),
         }
     }
 
-    override fun insertCenter(center: Center) {
-        log("INSERT CENTER")
-        log(center.key)
-
-    }
-
     override fun insertMarker(markerOptions: MarkerOptions) {
         if (googleMap != null) {
             googleMap!!.addMarker(markerOptions)
@@ -49,15 +43,17 @@ class Home : AppCompatActivity(),
     }
 
     override fun onRemoveButtonClick(center: Center) {
-
+        presenter.requestRemoveCenter(isNetworkOnline(), center)
     }
 
     override fun onSaveButtonClick(center: Center) {
-
+        presenter.requestSaveCenter(isNetworkOnline(), center)
     }
 
     override fun removeMarker(marker: Marker) {
-
+        if (googleMap != null) {
+            googleMap!!.clear()
+        }
     }
 
     override fun showEditBox(center: Center) {

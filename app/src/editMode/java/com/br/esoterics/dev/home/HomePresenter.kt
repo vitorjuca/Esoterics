@@ -1,6 +1,7 @@
 package com.br.esoterics.dev.home
 
 import com.br.esoterics.dev.Center
+import com.br.esoterics.dev.R
 import com.br.esoterics.dev.helpers.dataSaveThrowable
 import com.br.esoterics.dev.helpers.networkThrowable
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -24,7 +25,6 @@ class HomePresenter(private val view: HomeContract.View): HomeContract.Presenter
                     onSuccess = {
                         it.forEach { center ->
                             storageCenters.add(center)
-                            view.insertCenter(center)
                             view.insertMarker(initMarkerOption(center))
                         }
                     },
@@ -37,7 +37,11 @@ class HomePresenter(private val view: HomeContract.View): HomeContract.Presenter
     override fun requestRemoveCenter(isNetworkOnline: Boolean, center: Center) {
         if (isNetworkOnline){
             repository.requestRemoveCenter(center,
-                    onSuccess = { view.removeMarker(find(center) as Marker) },
+                    onSuccess = {
+                        storageCenters.remove(center)
+                        storageMarkers.remove(find(center) as Marker)
+                        view.removeMarker(find(center) as Marker)
+                        updateCenters()},
                     onError = { view.showError(it) })
         }else{
             view.showError(networkThrowable)
@@ -48,13 +52,28 @@ class HomePresenter(private val view: HomeContract.View): HomeContract.Presenter
         if (isNetworkOnline){
             if (center.key != ""){
                 repository.requestSaveCenter(center,
-                        onSuccess = { view.insertCenter(center) },
+                        onSuccess = {
+                            if (storageCenters.filter { it.key.equals(center.key) }.isEmpty()){
+                                storageCenters.add(center)
+                                updateCenters()
+                            }else{
+
+                                storageCenters.remove(center)
+                                storageCenters.add(center)
+                            }
+                        },
                         onError = { view.showError(it) })
             }else{
                 view.showError(dataSaveThrowable)
             }
         }else{
             view.showError(networkThrowable)
+        }
+    }
+
+    override fun updateCenters() {
+        storageCenters.forEach {
+            view.insertMarker(initMarkerOption(it))
         }
     }
 
@@ -78,11 +97,22 @@ class HomePresenter(private val view: HomeContract.View): HomeContract.Presenter
         }
     }
 
+    private fun getCenterTypeIcon(centerType: String): Int{
+       return when(centerType){
+            "Umbanda" -> R.drawable.umbanda
+            "Candomblé" -> R.drawable.candomble
+            "Esotericos" -> R.drawable.esotericos
+            "Xamanico" -> R.drawable.xamanico
+            else -> R.drawable.outros
+        }
+    }
+
     private fun initMarkerOption(center: Center): MarkerOptions{
         return MarkerOptions()
                 .position(LatLng(center.address.latitude.toDouble(),
                                  center.address.longitude.toDouble()))
                 .title(center.model.name)
+                .icon(BitmapDescriptorFactory.fromResource(getCenterTypeIcon(center.model.type)))
                 .flat(true)
                 .snippet(center.key)
     }

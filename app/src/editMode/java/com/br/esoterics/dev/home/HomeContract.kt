@@ -11,7 +11,6 @@ interface HomeContract {
 
     interface View{
         fun showError(t: Throwable)
-        fun insertCenter(center: Center)
         fun insertMarker(markerOptions: MarkerOptions)
         fun showEditBox(center: Center)
         fun onSaveButtonClick(center: Center)
@@ -22,6 +21,7 @@ interface HomeContract {
         fun requestAllCenters(isNetworkOnline: Boolean)
         fun requestSaveCenter(isNetworkOnline: Boolean, center: Center)
         fun requestRemoveCenter(isNetworkOnline: Boolean, center: Center)
+        fun updateCenters()
         fun openEditBoxFromMarker(marker: Marker)
     }
 }

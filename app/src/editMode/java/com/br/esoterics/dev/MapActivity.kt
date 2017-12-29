@@ -235,7 +235,6 @@ class MapActivity : AppCompatActivity(),
         }catch (e: Exception){}
 
         return address
-
     }
 
     override fun onBackPressed() {
