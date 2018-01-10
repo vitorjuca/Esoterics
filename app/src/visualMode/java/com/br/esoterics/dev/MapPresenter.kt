@@ -1,10 +1,6 @@
 package com.br.esoterics.dev
 
 import android.view.View
-import com.br.dev.vj.Center
-import com.br.esoterics.esoadmin.ADDRESS
-import com.br.esoterics.esoadmin.MODEL
-import com.br.esoterics.esoadmin.R
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker

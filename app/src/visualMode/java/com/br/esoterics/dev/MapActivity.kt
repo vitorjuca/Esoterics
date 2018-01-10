@@ -5,12 +5,11 @@ import android.app.ProgressDialog
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.AdapterView
 import android.widget.Toast
-import com.br.esoterics.esoadmin.R
-import com.br.esoterics.esoadmin.helpers.isNetWorkOnline
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -46,9 +45,10 @@ class MapActivity: AppCompatActivity(),
         progressDialog.setMessage("Aguarde...")
         progressDialog.setCancelable(false)
 
-        mapPresenter.startApp(isNetWorkOnline())
+        mapPresenter.startApp(isNetworkOnline())
     }
     override fun onStartAppCallback() {
+        log(" START APP CALLBACK")
         connectGoogleApiClient()
         hideCenterInfo()
         centerTypeFilter.onItemSelectedListener = onItemSelectedListener()
@@ -71,9 +71,12 @@ class MapActivity: AppCompatActivity(),
         }
     }
 
-    override fun onRequestAllCentersCallback(centersList: ArrayList<com.br.dev.vj.Center>) {
+
+
+    override fun onRequestAllCentersCallback(centersList: ArrayList<Center>) {
         mapPresenter.populateMarkersOptionsFromCenters(centersList)
     }
+
 
     override fun onPopulateMarkersFromCentersCallback(markerOptionsList: ArrayList<MarkerOptions>) {
         mapPresenter.addMarkerOptionsToGoogleMap(markerOptionsList)
@@ -92,7 +95,7 @@ class MapActivity: AppCompatActivity(),
         return true
     }
 
-    override fun showCenterInfo(center: com.br.dev.vj.Center, centerDrawable: Int) {
+    override fun showCenterInfo(center: Center, centerDrawable: Int) {
         var fadeIn = AnimationUtils.loadAnimation(this, R.anim.abc_fade_in)
         editBox.startAnimation(fadeIn)
         centerType.text = center.model.type
@@ -106,6 +109,7 @@ class MapActivity: AppCompatActivity(),
     }
 
     override fun hideCenterInfo() {
+        log("HIDE CENTER INFO")
         var fadeOut = AnimationUtils.loadAnimation(this, R.anim.abc_fade_out)
         editBox.startAnimation(fadeOut)
         editBox.visibility = View.GONE
@@ -184,6 +188,10 @@ class MapActivity: AppCompatActivity(),
 
     override fun showToast(data: String) {
         Toast.makeText(this, data, Toast.LENGTH_SHORT).show()
+    }
+
+    fun log(string: String){
+        Log.d("DEBUG", string)
     }
 
 

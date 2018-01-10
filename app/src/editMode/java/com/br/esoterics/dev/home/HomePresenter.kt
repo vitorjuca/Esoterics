@@ -12,6 +12,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 /**
  * Created by vitor_juca on 28/12/17.
  */
+
+
 class HomePresenter(private val view: HomeContract.View): HomeContract.Presenter {
 
 

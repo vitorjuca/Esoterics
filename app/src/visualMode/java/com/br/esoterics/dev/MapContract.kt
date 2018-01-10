@@ -1,6 +1,5 @@
 package com.br.esoterics.dev
 
-import com.br.dev.vj.Center
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
