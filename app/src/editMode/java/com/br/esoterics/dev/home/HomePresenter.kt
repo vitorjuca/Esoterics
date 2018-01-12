@@ -1,8 +1,10 @@
 package com.br.esoterics.dev.home
 
+import android.util.Log
 import com.br.esoterics.dev.Center
 import com.br.esoterics.dev.R
 import com.br.esoterics.dev.helpers.dataSaveThrowable
+import com.br.esoterics.dev.helpers.defaultThrowable
 import com.br.esoterics.dev.helpers.networkThrowable
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
@@ -20,6 +22,15 @@ class HomePresenter(private val view: HomeContract.View): HomeContract.Presenter
     private val repository by lazy { HomeRepository() }
     private var storageMarkers: ArrayList<Marker> = arrayListOf()
     private var storageCenters: ArrayList<Center> = arrayListOf()
+
+    override fun startApp(isNetworkOnline: Boolean) {
+        view.showProgressDialog()
+        if (isNetworkOnline){
+            view.onStartApp()
+        }else{
+            view.showError(defaultThrowable)
+        }
+    }
 
     override fun requestAllCenters(isNetworkOnline: Boolean) {
         if (isNetworkOnline){
@@ -81,6 +92,7 @@ class HomePresenter(private val view: HomeContract.View): HomeContract.Presenter
 
     override fun openEditBoxFromMarker(marker: Marker) {
         var center = find(marker) as Center
+        Log.d("DEBUG", center.toString())
         view.showEditBox(center)
     }
 

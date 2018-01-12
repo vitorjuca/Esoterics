@@ -16,8 +16,13 @@ interface HomeContract {
         fun onSaveButtonClick(center: Center)
         fun onRemoveButtonClick(center: Center)
         fun removeMarker(marker: Marker)
+        fun showProgressDialog()
+        fun hideProgressDialog()
+        fun onStartApp()
+        fun hideCenterInfo()
     }
     interface Presenter{
+        fun startApp(isNetworkOnline: Boolean)
         fun requestAllCenters(isNetworkOnline: Boolean)
         fun requestSaveCenter(isNetworkOnline: Boolean, center: Center)
         fun requestRemoveCenter(isNetworkOnline: Boolean, center: Center)

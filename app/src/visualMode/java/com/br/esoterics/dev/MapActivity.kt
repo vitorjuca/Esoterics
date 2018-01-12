@@ -73,7 +73,7 @@ class MapActivity: AppCompatActivity(),
             }
                 mapPresenter.requestAllCenters()
         }
-    }   
+    }
 
 
 
