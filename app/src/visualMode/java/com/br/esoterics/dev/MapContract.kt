@@ -7,6 +7,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 /**
  * Created by vitorjuca on 10/12/17.
  */
+
 interface MapContract {
 
     interface Presenter{

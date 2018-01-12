@@ -35,6 +35,7 @@ class MapActivity: AppCompatActivity(),
     private val googleApiClient by lazy { initGoogleApiClient() }
     private val progressDialog by lazy { initProgressDialog() }
     private var googleMap: GoogleMap? = null
+    private val locationManager by lazy { initLocationPermissionManager() }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +54,6 @@ class MapActivity: AppCompatActivity(),
         hideCenterInfo()
         centerTypeFilter.onItemSelectedListener = onItemSelectedListener()
 
-
         val mapFragment = map as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
@@ -67,9 +67,13 @@ class MapActivity: AppCompatActivity(),
         if (googleMap != null){
             googleMap!!.setOnMapClickListener(this)
             googleMap!!.setOnMarkerClickListener(this)
-            mapPresenter.requestAllCenters()
+            if(locationManager.isPermissionGranted(this)) {
+                googleMap!!.setMyLocationEnabled(true)
+                googleMap!!.getUiSettings().setMyLocationButtonEnabled(true)
+            }
+                mapPresenter.requestAllCenters()
         }
-    }
+    }   
 
 
 
@@ -175,6 +179,10 @@ class MapActivity: AppCompatActivity(),
         return ProgressDialog(this)
     }
 
+    private fun initLocationPermissionManager(): LocationPermissionManager{
+        return LocationPermissionManager()
+    }
+
 
     fun onItemSelectedListener() = object : AdapterView.OnItemSelectedListener {
 
@@ -193,6 +201,4 @@ class MapActivity: AppCompatActivity(),
     fun log(string: String){
         Log.d("DEBUG", string)
     }
-
-
 }
